@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { loadContent } from '../learning/content'
 import { applyPlacement } from '../learning/placement'
 import { buildDailySet, buildFreeSet } from '../learning/scheduler'
-import type { Chapter, Progress, StudyAppAPI, StudySet } from '../shared/types'
+import type { Chapter, Progress, StudyAppAPI, StudyRange, StudySet } from '../shared/types'
 import { ChapterList } from './components/ChapterList'
 import { Home } from './components/Home'
 import { Placement } from './components/Placement'
@@ -19,7 +19,9 @@ function localDate(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
-export function App({ api = window.studyApp, today = localDate() }: { api?: StudyAppAPI; today?: string }) {
+export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAppAPI; today?: string }) {
+  const [calendarDate, setCalendarDate] = useState(localDate)
+  const today = fixedDate ?? calendarDate
   const [progress, setProgress] = useState<Progress | null>(null)
   const [route, setRoute] = useState<Route>('loading')
   const [studySet, setStudySet] = useState<StudySet | null>(null)
@@ -27,6 +29,13 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
   const [japaneseVoiceAvailable, setJapaneseVoiceAvailable] = useState(false)
 
   useEffect(() => watchJapaneseVoice(setJapaneseVoiceAvailable), [])
+  useEffect(() => {
+    if (fixedDate) return
+    const update = () => setCalendarDate(localDate())
+    const timer = window.setInterval(update, 30_000)
+    window.addEventListener('focus', update)
+    return () => { window.clearInterval(timer); window.removeEventListener('focus', update) }
+  }, [fixedDate])
 
   useEffect(() => {
     let active = true
@@ -41,11 +50,12 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
   async function save(next: Progress): Promise<void> {
     await api.saveProgress(next)
     setProgress(next)
+    if (!fixedDate) setCalendarDate(localDate())
   }
 
   async function start(set: StudySet): Promise<void> {
     if (!progress || set.itemIds.length === 0) return
-    const next: Progress = { ...progress, activeSet: { id: set.id, source: set.source, itemIds: set.itemIds, currentIndex: 0 } }
+    const next: Progress = { ...progress, activeSet: { id: set.id, source: set.source, itemIds: set.itemIds, chapter: set.chapter, range: set.range, currentIndex: 0 } }
     try {
       await save(next)
       setStudySet(set)
@@ -59,24 +69,24 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
   function resume(): void {
     if (!progress?.activeSet) return
     const active = progress.activeSet
-    setStudySet({ id: active.id, source: active.source, itemIds: active.itemIds, estimatedMinutes: active.itemIds.length })
+    setStudySet({ id: active.id, source: active.source, chapter: active.chapter, range: active.range, itemIds: active.itemIds, estimatedMinutes: active.itemIds.length })
     setRoute('practice')
   }
 
-  function startFree(chapter: Chapter): void {
+  function startFree(chapter: Chapter, range: StudyRange = 'all'): void {
     if (progress?.activeSet) {
       setError('진행 중인 학습을 먼저 마쳐 주세요. 이어 풀기로 돌아갈 수 있습니다.')
       setRoute('home')
       return
     }
-    void start(buildFreeSet(content, chapter, Date.now()))
+    void start(buildFreeSet(content, chapter, Date.now(), range))
   }
 
   if (error && !progress) return <main className="load-error" role="alert">{error}</main>
   if (!progress || route === 'loading') return <main className="loading-screen" role="status">학습 기록을 불러오는 중...</main>
 
   const dailySet = buildDailySet(content, progress, today, Number(today.replaceAll('-', '')))
-  const freeChapter = studySet?.id.split('-')[1] as Chapter | undefined
+  const freeChapter = studySet?.chapter ?? studySet?.id.split('-')[1] as Chapter | undefined
   const practiceTitle = studySet?.source === 'daily' ? '오늘의 학습 진행 중' : `${freeChapter === 'kana' ? '문자' : freeChapter === 'grammar' ? '문법' : freeChapter === 'vocabulary' ? '단어' : '문장'} 자유 연습`
 
   return (
@@ -101,18 +111,18 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
         {route === 'home' && <Home progress={progress} today={today} dailySet={dailySet}
           onStart={() => { void start(dailySet) }} onResume={resume} onFree={() => setRoute('chapters')} />}
         {route === 'chapters' && <ChapterList onStart={startFree} />}
-        {route === 'progress' && <ProgressView progress={progress} today={today} />}
+        {route === 'progress' && <ProgressView progress={progress} today={today} content={content} />}
         {route === 'settings' && <Settings onRedoPlacement={() => setRoute('placement')} japaneseVoiceAvailable={japaneseVoiceAvailable} />}
         {route === 'practice' && studySet && <div className="practice-page">
           <div className="practice-toolbar"><button type="button" className="text-button" onClick={() => setRoute('home')}>학습 나가기</button><span>언제든 다시 이어 풀 수 있어요</span></div>
           <h1 className="practice-title">{practiceTitle}</h1>
-          <Practice key={studySet.id} set={studySet} content={content} progress={progress} today={today}
+          <Practice key={studySet.id} set={studySet} content={content} progress={progress} today={today} getToday={() => fixedDate ?? localDate()}
             onSave={save} onFinish={() => setRoute(studySet.source === 'free' && freeChapter === 'kana' ? 'kana-complete' : 'home')}
             onSpeak={japaneseVoiceAvailable ? (text) => { speakJapanese(text) } : undefined} />
         </div>}
         {route === 'kana-complete' && <div className="continue-page">
           <div className="completion-card"><p className="eyebrow">문자 반복 학습</p><h1>한 묶음을 끝냈어요</h1><p>원하면 다음 묶음도 바로 이어갈 수 있습니다.</p>
-            <button type="button" className="primary-button" onClick={() => startFree('kana')}>계속 문자 연습</button>
+            <button type="button" className="primary-button" onClick={() => startFree('kana', studySet?.range ?? 'all')}>계속 문자 연습</button>
             <button type="button" className="secondary-button" onClick={() => setRoute('home')}>홈으로</button>
           </div>
         </div>}

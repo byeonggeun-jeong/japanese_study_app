@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { act, cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../src/renderer/App'
 import { createEmptyProgress } from '../src/main/progressStore'
 import type { Progress, StudyAppAPI } from '../src/shared/types'
 
-afterEach(cleanup)
+afterEach(() => { cleanup(); vi.useRealTimers() })
 
 function placedProgress(): Progress {
   return { ...createEmptyProgress(), placement: {
@@ -26,6 +26,33 @@ function appWithProgress(initial: Progress) {
 }
 
 describe('app navigation', () => {
+  it('updates the local study date when the app stays open past midnight', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 10, 1, 23, 59, 40))
+    render(<App api={{ loadProgress: async () => placedProgress(), saveProgress: async () => {} }} />)
+    await act(async () => {})
+    expect(screen.getByText('TODAY · 2026-11-01')).toBeTruthy()
+    await act(async () => { vi.advanceTimersByTime(60_000) })
+    expect(screen.getByText('TODAY · 2026-11-02')).toBeTruthy()
+  })
+
+  it('shows progress separately for each chapter', async () => {
+    const user = userEvent.setup()
+    appWithProgress({ ...placedProgress(), answers: { 'kana-a-01': { correct: 2, incorrect: 0, lastAnsweredAt: '2026-11-01' } } })
+    await user.click(await screen.findByRole('button', { name: '진도' }))
+    expect(screen.getByRole('progressbar', { name: '문자 학습 진도' }).getAttribute('value')).toBe('1')
+    expect(screen.getByRole('progressbar', { name: '문법 학습 진도' }).getAttribute('value')).toBe('0')
+  })
+
+  it('offers level and script ranges for free study', async () => {
+    const user = userEvent.setup()
+    appWithProgress(placedProgress())
+    await screen.findByRole('heading', { name: '오늘의 학습' })
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: '자유 연습' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: '문자 범위' }), 'katakana')
+    await user.click(screen.getByRole('button', { name: '문자 연습 시작' }))
+    expect(screen.getByRole('heading', { name: '문자 자유 연습' })).toBeTruthy()
+  })
   it('opens placement on first launch', async () => {
     appWithProgress(createEmptyProgress())
     expect(await screen.findByRole('heading', { name: '시작점 찾기' })).toBeTruthy()

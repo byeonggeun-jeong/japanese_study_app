@@ -10,14 +10,17 @@
     "options": ["みず", "やま", "かわ", "そら"],
     "answer": "みず",
     "explanation": "水는 みず라고 읽고 '물'이라는 뜻입니다.",
-    "placementTier": 1
+    "placementTier": 1,
+    "guide": { "title": "水", "text": "みず · 물", "examples": [{ "ja": "水を一杯飲む", "ko": "물을 한 잔 마시다" }] }
   },
   {
     "id": "vocab-yama-01", "chapter": "vocabulary", "level": "N5", "topicId": "everyday-nouns", "lessonId": "vocab-everyday-1", "kind": "choice",
-    "prompt": "山의 읽기는 무엇인가요?", "options": ["やま", "みず", "かわ", "ひと"], "answer": "やま", "explanation": "山은 やま라고 읽고 '산'이라는 뜻입니다.", "placementTier": 1
+    "prompt": "山의 읽기는 무엇인가요?", "options": ["やま", "みず", "かわ", "ひと"], "answer": "やま", "explanation": "山은 やま라고 읽고 '산'이라는 뜻입니다.", "placementTier": 1,
+    "guide": { "title": "山", "text": "やま · 산", "examples": [{ "ja": "山に登る", "ko": "산에 오르다" }] }
   },
   {
     "id": "vocab-yakusoku-01", "chapter": "vocabulary", "level": "N4", "topicId": "social-life", "lessonId": "vocab-social-n4", "kind": "choice",
-    "prompt": "約束의 읽기는 무엇인가요?", "options": ["やくそく", "やくしょ", "やくひん", "やくめ"], "answer": "やくそく", "explanation": "約束는 やくそく라고 읽고 '약속'이라는 뜻입니다.", "placementTier": 2
+    "prompt": "約束의 읽기는 무엇인가요?", "options": ["やくそく", "やくしょ", "やくひん", "やくめ"], "answer": "やくそく", "explanation": "約束은 やくそく라고 읽고 '약속'이라는 뜻입니다.", "placementTier": 2,
+    "guide": { "title": "約束", "text": "やくそく · 약속", "examples": [{ "ja": "友達との約束を守る", "ko": "친구와의 약속을 지키다" }] }
   }
 ]

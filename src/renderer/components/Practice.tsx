@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { recordAnswer } from '../../learning/review'
 import { finishSet } from '../../learning/scheduler'
+import { orderOptions } from '../../learning/options'
 import type { Progress, StudyContent, StudyItem, StudySet } from '../../shared/types'
 import { ArrangeQuestion } from './ArrangeQuestion'
 import { ChoiceQuestion } from './ChoiceQuestion'
 import { Completion } from './Completion'
 import { InputQuestion } from './InputQuestion'
 
-export function Practice({ set, content, progress, today, onSave, onFinish, onSpeak }: {
+export function Practice({ set, content, progress, today, getToday, onSave, onFinish, onSpeak }: {
   set: StudySet
   content: StudyContent
   progress: Progress
   today: string
+  getToday?(): string
   onSave(progress: Progress): Promise<void>
   onFinish(progress: Progress): void
   onSpeak?(text: string): void
@@ -20,13 +22,14 @@ export function Practice({ set, content, progress, today, onSave, onFinish, onSp
   const [feedback, setFeedback] = useState<{ item: StudyItem; correct: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [shownGuideFor, setShownGuideFor] = useState<string | null>(null)
   const item = content.items.find((entry) => entry.id === set.itemIds[index])
 
   async function answer(value: string): Promise<void> {
     if (!item || busy || feedback) return
     const correct = value.trim() === item.answer.trim()
-    const updated = recordAnswer(progress, item.id, correct, today)
-    updated.activeSet = { id: set.id, source: set.source, itemIds: set.itemIds, currentIndex: index + 1 }
+    const updated = recordAnswer(progress, item.id, correct, getToday?.() ?? today)
+    updated.activeSet = { id: set.id, source: set.source, itemIds: set.itemIds, chapter: set.chapter, range: set.range, currentIndex: index + 1 }
     setBusy(true)
     setError('')
     try {
@@ -43,7 +46,7 @@ export function Practice({ set, content, progress, today, onSave, onFinish, onSp
     if (busy) return
     setBusy(true)
     setError('')
-    const updated = finishSet(progress, set, today)
+    const updated = finishSet(progress, set, getToday?.() ?? today)
     try {
       await onSave(updated)
       onFinish(updated)
@@ -54,8 +57,27 @@ export function Practice({ set, content, progress, today, onSave, onFinish, onSp
   }
 
   if (set.itemIds.length === 0) return <p>이 범위에는 아직 문제가 없습니다.</p>
-  if (index >= set.itemIds.length) return <Completion set={set} onFinish={() => { void finish() }} busy={busy} />
+  if (index >= set.itemIds.length) return <>
+    <Completion set={set} onFinish={() => { void finish() }} busy={busy} />
+    {error && <p className="error-message" role="alert">{error}</p>}
+  </>
   if (!item) return <p>문제를 찾지 못했습니다. 학습을 다시 시작해 주세요.</p>
+
+  if (item.guide && !progress.answers[item.id] && shownGuideFor !== item.id) return (
+    <section className="practice">
+      <article className="question-card guide-card">
+        <p className="eyebrow">새로 익히기 · {index + 1} / {set.itemIds.length}</p>
+        <h2>{item.guide.title}</h2>
+        <p>{item.guide.text}</p>
+        {item.guide.examples.map((example) => <div className="guide-example" key={example.ja}>
+          <p lang="ja">{example.ja}</p>{example.ko && <p>{example.ko}</p>}
+        </div>)}
+        {onSpeak && item.speechText && <button className="secondary-button" type="button" onClick={() => onSpeak(item.speechText!)}>발음 듣기</button>}
+        <button type="button" className="primary-button" onClick={() => setShownGuideFor(item.id)}>연습해 보기</button>
+      </article>
+    </section>
+  )
+  const options = orderOptions(item.options ?? [], `${set.id}:${item.id}`)
 
   return (
     <section className="practice">
@@ -67,8 +89,8 @@ export function Practice({ set, content, progress, today, onSave, onFinish, onSp
         <p className="eyebrow">{item.chapter === 'kana' ? '문자' : item.chapter === 'grammar' ? '문법' : item.chapter === 'vocabulary' ? '단어' : '문장'}</p>
         <h2>{item.prompt}</h2>
         {!feedback && !busy && (item.kind === 'choice' || item.kind === 'listen') &&
-          <ChoiceQuestion options={item.options ?? []} onAnswer={(value) => { void answer(value) }} speechText={item.speechText} onSpeak={onSpeak} />}
-        {!feedback && !busy && item.kind === 'arrange' && <ArrangeQuestion options={item.options ?? []} onAnswer={(value) => { void answer(value) }} />}
+          <ChoiceQuestion options={options} onAnswer={(value) => { void answer(value) }} speechText={item.speechText} onSpeak={onSpeak} />}
+        {!feedback && !busy && item.kind === 'arrange' && <ArrangeQuestion key={item.id} options={options} onAnswer={(value) => { void answer(value) }} />}
         {!feedback && !busy && item.kind === 'input' && <InputQuestion onAnswer={(value) => { void answer(value) }} />}
         {busy && <p role="status">저장 중...</p>}
         {feedback && <div className={`answer-feedback ${feedback.correct ? 'correct' : 'incorrect'}`} role="status">

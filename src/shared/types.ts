@@ -1,6 +1,7 @@
 export type Chapter = 'kana' | 'grammar' | 'vocabulary' | 'sentences'
 export type StudyLevel = 'kana' | 'N5' | 'N4'
 export type QuestionKind = 'choice' | 'input' | 'arrange' | 'listen'
+export type StudyRange = 'all' | 'hiragana' | 'katakana' | 'N5' | 'N4'
 
 export interface StudyItem {
   id: string
@@ -15,6 +16,11 @@ export interface StudyItem {
   explanation: string
   speechText?: string
   placementTier?: 1 | 2
+  guide?: {
+    title: string
+    text: string
+    examples: { ja: string; ko?: string }[]
+  }
 }
 
 export interface PlacementAnswer {
@@ -59,6 +65,8 @@ export interface Progress {
     source: 'daily' | 'free'
     itemIds: string[]
     currentIndex: number
+    chapter?: Chapter
+    range?: StudyRange
   }
 }
 
@@ -72,4 +80,6 @@ export interface StudySet {
   source: 'daily' | 'free'
   itemIds: string[]
   estimatedMinutes: number
+  chapter?: Chapter
+  range?: StudyRange
 }

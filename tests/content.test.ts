@@ -128,6 +128,16 @@ describe('learning content', () => {
     expect(lexicon.every((entry) => entry.meaning.trim() && !/[A-Za-z]/.test(entry.meaning))).toBe(true)
   })
 
+  it('gives every word a Japanese usage context', () => {
+    expect(lexicon.every((entry) => 'context' in entry && typeof entry.context === 'string' && entry.context.trim().length > 0)).toBe(true)
+  })
+
+  it('teaches grammar with two examples and words with context', () => {
+    const { items } = loadContent()
+    expect(items.filter((item) => item.chapter === 'grammar').every((item) => item.guide && item.guide.examples.length >= 2)).toBe(true)
+    expect(items.filter((item) => item.chapter === 'vocabulary').every((item) => item.guide && item.guide.examples.length >= 1)).toBe(true)
+  })
+
   it('includes both scripts and special sound practice', () => {
     const kanaTopics = new Set(loadContent().items.filter((item) => item.chapter === 'kana').map((item) => item.topicId))
     for (const script of ['hiragana', 'katakana']) {

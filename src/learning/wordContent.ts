@@ -1,7 +1,7 @@
 import lexicon from '../content/vocabulary/lexicon.json'
 import type { Lesson, StudyItem, StudyLevel } from '../shared/types'
 
-type Word = { id: string; word: string; reading: string; meaning: string; level: StudyLevel; pos: string }
+type Word = { id: string; word: string; reading: string; meaning: string; context: string; level: StudyLevel; pos: string }
 const words = lexicon as Word[]
 const categoryNames = { noun: '명사', verb: '동작', adjective: '상태와 성질', other: '표현' }
 
@@ -44,7 +44,8 @@ export function buildWordContent(): { items: StudyItem[]; lessons: Lesson[] } {
             prompt: askReading ? `「${word.word}」의 읽기는 무엇인가요?` : `「${word.word}」의 뜻은 무엇인가요?`,
             options: choices(answer, askReading ? readings : meanings, start + index), answer,
             explanation: `「${word.word}」는 ${word.reading}라고 읽고 ‘${word.meaning}’이라는 뜻입니다.`,
-            speechText: word.word
+            speechText: word.word,
+            guide: { title: word.word, text: `${word.reading} · ${word.meaning}`, examples: [{ ja: word.context }] }
           })
         })
       }

@@ -1,4 +1,5 @@
 import { n4Grammar, n5Grammar } from '../content/grammar/points'
+import { grammarNotes } from '../content/grammar/notes'
 import type { Lesson, StudyItem } from '../shared/types'
 
 type Point = { pattern: string; meaning: string; examples: [string, string, string, string] }
@@ -7,6 +8,7 @@ function parse(source: string): Point[] {
   return source.split('\n').map((line) => {
     const [pattern, meaning, ja1, ko1, ja2, ko2] = line.split('|')
     if (![pattern, meaning, ja1, ko1, ja2, ko2].every(Boolean)) throw new Error(`Incomplete grammar point: ${line}`)
+    if (!grammarNotes[pattern]) throw new Error(`Missing grammar explanation: ${pattern}`)
     return { pattern, meaning, examples: [ja1, ko1, ja2, ko2] }
   })
 }
@@ -41,10 +43,21 @@ export function buildGrammarContent(): { items: StudyItem[]; lessons: Lesson[] }
         kind: 'choice', prompt: `「${point.pattern}」의 쓰임은 무엇인가요?\n${point.examples[0]}`,
         options: [point.meaning, ...[0, 1, 2].map((offset) => distractors[(index * 5 + offset * 7) % distractors.length])],
         answer: point.meaning,
-        explanation: `${point.pattern}: ${point.meaning}\n${point.examples[0]} ${point.examples[1]}\n${point.examples[2]} ${point.examples[3]}`,
-        speechText: point.examples[0]
+        explanation: `${grammarNotes[point.pattern]}\n${point.examples[0]} ${point.examples[1]}\n${point.examples[2]} ${point.examples[3]}`,
+        speechText: point.examples[0],
+        guide: { title: point.pattern, text: `${point.meaning}. ${grammarNotes[point.pattern]}`, examples: [
+          { ja: point.examples[0], ko: point.examples[1] }, { ja: point.examples[2], ko: point.examples[3] }
+        ] }
       })
     })
   }
+  const foundation = ['です', 'ではありません', 'でした', 'ます', 'ません', 'ました', 'ませんでした', 'い形容詞', 'な形容詞', '普通形', 'ない形', 'た形', 'て形']
+  items.sort((a, b) => {
+    const rank = (item: StudyItem) => {
+      const index = foundation.indexOf(item.guide!.title)
+      return index < 0 ? foundation.length : index
+    }
+    return rank(a) - rank(b)
+  })
   return { items, lessons }
 }

@@ -10,14 +10,17 @@
     "options": ["です", "ます", "を", "に"],
     "answer": "です",
     "explanation": "명사 뒤의 です는 정중하게 '입니다'라고 말할 때 사용합니다.",
-    "placementTier": 1
+    "placementTier": 1,
+    "guide": { "title": "명사 + です", "text": "명사 뒤에 です를 붙여 정중하게 '~입니다'라고 말합니다.", "examples": [{ "ja": "私は会社員です。", "ko": "저는 회사원입니다." }, { "ja": "今日は休みです。", "ko": "오늘은 쉬는 날입니다." }] }
   },
   {
     "id": "grammar-e-01", "chapter": "grammar", "level": "N5", "topicId": "particles", "lessonId": "grammar-particles-1", "kind": "choice",
-    "prompt": "学校___行きます。 빈칸에 들어갈 말은?", "options": ["へ", "を", "が", "で"], "answer": "へ", "explanation": "へ는 이동하는 방향을 나타냅니다.", "placementTier": 1
+    "prompt": "学校___行きます。 빈칸에 들어갈 말은?", "options": ["へ", "を", "が", "で"], "answer": "へ", "explanation": "へ는 이동하는 방향을 나타내며 조사일 때는 '에'로 읽습니다.", "placementTier": 1,
+    "guide": { "title": "이동 방향 へ", "text": "장소 뒤의 へ는 이동 방향을 나타냅니다. 조사 へ는 '에'로 읽습니다.", "examples": [{ "ja": "町へ行きます。", "ko": "마을로 갑니다." }, { "ja": "家へ帰ります。", "ko": "집으로 돌아갑니다." }] }
   },
   {
     "id": "grammar-temoii-01", "chapter": "grammar", "level": "N4", "topicId": "permission", "lessonId": "grammar-permission-n4", "kind": "choice",
-    "prompt": "ここで写真を撮って___ですか。 허락을 구하는 말은?", "options": ["もいい", "しまう", "ください", "ある"], "answer": "もいい", "explanation": "동사의 て형에 もいい를 붙이면 '~해도 된다'는 뜻입니다.", "placementTier": 2
+    "prompt": "ここで写真を撮って___ですか。 허락을 구하는 말은?", "options": ["もいい", "しまう", "ください", "ある"], "answer": "もいい", "explanation": "동사의 て형에 もいい를 붙이면 '~해도 된다'는 뜻입니다.", "placementTier": 2,
+    "guide": { "title": "허락을 구하는 てもいい", "text": "동사의 て형 + もいいですか로 '~해도 됩니까?'라고 묻습니다.", "examples": [{ "ja": "窓を開けてもいいですか。", "ko": "창문을 열어도 됩니까?" }, { "ja": "ここで待ってもいいですか。", "ko": "여기서 기다려도 됩니까?" }] }
   }
 ]

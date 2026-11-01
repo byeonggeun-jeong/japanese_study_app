@@ -1,4 +1,4 @@
-import type { Chapter, Progress, StudyContent, StudyItem, StudySet } from '../shared/types'
+import type { Chapter, Progress, StudyContent, StudyItem, StudyRange, StudySet } from '../shared/types'
 import { completeStudyDate } from './streak'
 
 const dailySize = 15
@@ -59,10 +59,11 @@ export function buildDailySet(content: StudyContent, progress: Progress, today: 
   return { id: `daily-${today}`, source: 'daily', itemIds: selected, estimatedMinutes: selected.length }
 }
 
-export function buildFreeSet(content: StudyContent, chapter: Chapter, seed: number): StudySet {
-  const itemIds = shuffled(content.items.filter((item) => item.chapter === chapter), seed)
+export function buildFreeSet(content: StudyContent, chapter: Chapter, seed: number, range: StudyRange = 'all'): StudySet {
+  const itemIds = shuffled(content.items.filter((item) => item.chapter === chapter &&
+    (range === 'all' || item.level === range || item.topicId.startsWith(`${range}-`))), seed)
     .slice(0, freeSize).map((item) => item.id)
-  return { id: `free-${chapter}-${seed}`, source: 'free', itemIds, estimatedMinutes: itemIds.length }
+  return { id: `free-${chapter}-${seed}`, source: 'free', chapter, range, itemIds, estimatedMinutes: itemIds.length }
 }
 
 export function finishSet(progress: Progress, set: StudySet, today: string): Progress {

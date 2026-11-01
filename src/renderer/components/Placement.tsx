@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { nextPlacementItem, scorePlacement } from '../../learning/placement'
+import { orderOptions } from '../../learning/options'
 import type { PlacementAnswer } from '../../shared/types'
 import type { StudyItem } from '../../shared/types'
 import type { PlacementResult } from '../../learning/placement'
@@ -34,7 +35,7 @@ export function Placement({ items, onComplete }: { items: StudyItem[]; onComplet
           <p className="progress-label">응답한 문제 {answers.length}개</p>
           <h3>{item.prompt}</h3>
           <div className="option-list" role="group" aria-label="답 선택">
-            {item.options?.map((option) => (
+            {orderOptions(item.options ?? [], item.id).map((option) => (
               <button type="button" key={option} onClick={() => choose(option)}>{option}</button>
             ))}
           </div>

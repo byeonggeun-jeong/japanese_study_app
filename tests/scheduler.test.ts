@@ -56,6 +56,14 @@ describe('study scheduling', () => {
     expect(buildDailySet(content([]), createEmptyProgress(), today, 1).itemIds).toEqual([])
   })
 
+  it('filters free study to the selected level or script', () => {
+    const items = [item('n5'), item('n4', 'vocabulary', 'N4'),
+      { ...item('hira', 'kana', 'kana'), topicId: 'hiragana-basic' },
+      { ...item('kata', 'kana', 'kana'), topicId: 'katakana-basic' }]
+    expect(buildFreeSet(content(items), 'vocabulary', 1, 'N4').itemIds).toEqual(['n4'])
+    expect(buildFreeSet(content(items), 'kana', 1, 'katakana').itemIds).toEqual(['kata'])
+  })
+
   it('counts any completed set once for the local day', () => {
     const set = buildFreeSet(content([item('kana-1', 'kana', 'kana')]), 'kana', 1)
     const once = finishSet(createEmptyProgress(), set, today)
