@@ -17,6 +17,7 @@ function nonempty(value: unknown): boolean {
 export function validateContent(items: unknown[], lessons: unknown[]): ValidationIssue[] {
   const issues: ValidationIssue[] = []
   const itemIds = new Set<string>()
+  const itemsById = new Map<string, Record<string, unknown>>()
   const lessonIds = new Set<string>()
 
   for (const raw of items) {
@@ -25,6 +26,7 @@ export function validateContent(items: unknown[], lessons: unknown[]): Validatio
     if (!nonempty(id)) issues.push({ code: 'missing-item-id', id })
     else if (itemIds.has(id)) issues.push({ code: 'duplicate-item-id', id })
     itemIds.add(id)
+    itemsById.set(id, item)
 
     if (!chapters.includes(String(item.chapter))) issues.push({ code: 'invalid-chapter', id })
     if (!levels.includes(String(item.level))) issues.push({ code: 'invalid-level', id })
@@ -59,6 +61,12 @@ export function validateContent(items: unknown[], lessons: unknown[]): Validatio
     } else {
       for (const itemId of lesson.itemIds) {
         if (!itemIds.has(itemId)) issues.push({ code: 'missing-lesson-item', id })
+        else {
+          const item = itemsById.get(itemId)!
+          if (item.lessonId !== id || item.chapter !== lesson.chapter || item.level !== lesson.level) {
+            issues.push({ code: 'lesson-item-mismatch', id })
+          }
+        }
       }
     }
   }

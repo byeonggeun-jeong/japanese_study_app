@@ -1,6 +1,10 @@
 [
-  { "id": "kana-hiragana-1", "chapter": "kana", "level": "kana", "topicId": "hiragana-basic", "title": "히라가나 첫 글자", "estimatedMinutes": 10, "itemIds": ["kana-a-01"] },
+  { "id": "kana-hiragana-1", "chapter": "kana", "level": "kana", "topicId": "hiragana-basic", "title": "히라가나 첫 글자", "estimatedMinutes": 10, "itemIds": ["kana-a-01", "kana-i-01", "kana-kya-01"] },
   { "id": "grammar-desu-1", "chapter": "grammar", "level": "N5", "topicId": "desu", "title": "~입니다", "estimatedMinutes": 10, "itemIds": ["grammar-desu-01"] },
-  { "id": "vocab-everyday-1", "chapter": "vocabulary", "level": "N5", "topicId": "everyday-nouns", "title": "기본 명사", "estimatedMinutes": 10, "itemIds": ["vocab-mizu-01"] },
-  { "id": "sentence-requests-1", "chapter": "sentences", "level": "N5", "topicId": "daily-requests", "title": "간단한 요청", "estimatedMinutes": 10, "itemIds": ["sentence-water-01"] }
+  { "id": "grammar-particles-1", "chapter": "grammar", "level": "N5", "topicId": "particles", "title": "이동 방향 へ", "estimatedMinutes": 10, "itemIds": ["grammar-e-01"] },
+  { "id": "grammar-permission-n4", "chapter": "grammar", "level": "N4", "topicId": "permission", "title": "허락을 구하기", "estimatedMinutes": 10, "itemIds": ["grammar-temoii-01"] },
+  { "id": "vocab-everyday-1", "chapter": "vocabulary", "level": "N5", "topicId": "everyday-nouns", "title": "기본 명사", "estimatedMinutes": 10, "itemIds": ["vocab-mizu-01", "vocab-yama-01"] },
+  { "id": "vocab-social-n4", "chapter": "vocabulary", "level": "N4", "topicId": "social-life", "title": "약속", "estimatedMinutes": 10, "itemIds": ["vocab-yakusoku-01"] },
+  { "id": "sentence-requests-1", "chapter": "sentences", "level": "N5", "topicId": "daily-requests", "title": "간단한 요청", "estimatedMinutes": 10, "itemIds": ["sentence-water-01", "sentence-book-01"] },
+  { "id": "sentence-condition-n4", "chapter": "sentences", "level": "N4", "topicId": "conditions", "title": "조건문 읽기", "estimatedMinutes": 10, "itemIds": ["sentence-rain-01"] }
 ]

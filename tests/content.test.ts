@@ -75,6 +75,14 @@ describe('learning content', () => {
     )
   })
 
+  it('rejects a lesson containing an item from another level', () => {
+    const { items, lessons } = sampleContent()
+    items[1].level = 'N4'
+    expect(validateContent(items, lessons)).toContainEqual(
+      expect.objectContaining({ code: 'lesson-item-mismatch', id: 'grammar-lesson' })
+    )
+  })
+
   it('loads nonempty seed content for all four chapters', () => {
     const { items, lessons } = loadContent()
     expect(new Set(items.map((item) => item.chapter))).toEqual(new Set(chapters))

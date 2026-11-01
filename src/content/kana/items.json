@@ -9,6 +9,15 @@
     "prompt": "あ의 읽기는 무엇인가요?",
     "options": ["아", "이", "우", "에"],
     "answer": "아",
-    "explanation": "あ는 '아'로 읽습니다."
+    "explanation": "あ는 '아'로 읽습니다.",
+    "placementTier": 1
+  },
+  {
+    "id": "kana-i-01", "chapter": "kana", "level": "kana", "topicId": "hiragana-basic", "lessonId": "kana-hiragana-1", "kind": "choice",
+    "prompt": "い의 읽기는 무엇인가요?", "options": ["이", "아", "우", "에"], "answer": "이", "explanation": "い는 '이'로 읽습니다.", "placementTier": 1
+  },
+  {
+    "id": "kana-kya-01", "chapter": "kana", "level": "kana", "topicId": "hiragana-basic", "lessonId": "kana-hiragana-1", "kind": "choice",
+    "prompt": "きゃ의 읽기는 무엇인가요?", "options": ["캬", "키야", "쿠", "카"], "answer": "캬", "explanation": "작은 ゃ가 붙은 きゃ는 한 음절 '캬'로 읽습니다.", "placementTier": 2
   }
 ]

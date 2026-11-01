@@ -9,6 +9,15 @@
     "prompt": "私は学生___。 빈칸에 들어갈 말은?",
     "options": ["です", "ます", "を", "に"],
     "answer": "です",
-    "explanation": "명사 뒤의 です는 정중하게 '입니다'라고 말할 때 사용합니다."
+    "explanation": "명사 뒤의 です는 정중하게 '입니다'라고 말할 때 사용합니다.",
+    "placementTier": 1
+  },
+  {
+    "id": "grammar-e-01", "chapter": "grammar", "level": "N5", "topicId": "particles", "lessonId": "grammar-particles-1", "kind": "choice",
+    "prompt": "学校___行きます。 빈칸에 들어갈 말은?", "options": ["へ", "を", "が", "で"], "answer": "へ", "explanation": "へ는 이동하는 방향을 나타냅니다.", "placementTier": 1
+  },
+  {
+    "id": "grammar-temoii-01", "chapter": "grammar", "level": "N4", "topicId": "permission", "lessonId": "grammar-permission-n4", "kind": "choice",
+    "prompt": "ここで写真を撮って___ですか。 허락을 구하는 말은?", "options": ["もいい", "しまう", "ください", "ある"], "answer": "もいい", "explanation": "동사의 て형에 もいい를 붙이면 '~해도 된다'는 뜻입니다.", "placementTier": 2
   }
 ]

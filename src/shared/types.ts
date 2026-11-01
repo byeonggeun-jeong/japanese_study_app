@@ -14,6 +14,14 @@ export interface StudyItem {
   answer: string
   explanation: string
   speechText?: string
+  placementTier?: 1 | 2
+}
+
+export interface PlacementAnswer {
+  itemId: string
+  chapter: Chapter
+  tier: 1 | 2
+  correct: boolean
 }
 
 export interface Lesson {

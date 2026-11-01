@@ -10,6 +10,15 @@
     "options": ["물을 주세요.", "물을 마셨어요.", "물이 있어요.", "물은 없습니다."],
     "answer": "물을 주세요.",
     "explanation": "水는 물, を는 목적어 표시, ください는 '주세요'라는 뜻입니다.",
-    "speechText": "水をください。"
+    "speechText": "水をください。",
+    "placementTier": 1
+  },
+  {
+    "id": "sentence-book-01", "chapter": "sentences", "level": "N5", "topicId": "daily-requests", "lessonId": "sentence-requests-1", "kind": "choice",
+    "prompt": "これは本です。의 뜻은 무엇인가요?", "options": ["이것은 책입니다.", "그것은 책입니다.", "책을 주세요.", "책이 없습니다."], "answer": "이것은 책입니다.", "explanation": "これ는 '이것', は는 주제 표시, 本です는 '책입니다'입니다.", "placementTier": 1
+  },
+  {
+    "id": "sentence-rain-01", "chapter": "sentences", "level": "N4", "topicId": "conditions", "lessonId": "sentence-condition-n4", "kind": "choice",
+    "prompt": "雨が降ったら、出かけません。의 뜻은 무엇인가요?", "options": ["비가 오면 외출하지 않겠습니다.", "비가 와도 외출하겠습니다.", "비가 오기 전에 외출합니다.", "비가 왔으니 외출했습니다."], "answer": "비가 오면 외출하지 않겠습니다.", "explanation": "降ったら는 '오면', 出かけません은 '외출하지 않습니다'라는 뜻입니다.", "placementTier": 2
   }
 ]
