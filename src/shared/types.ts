@@ -66,3 +66,10 @@ export interface StudyAppAPI {
   loadProgress(): Promise<Progress>
   saveProgress(progress: Progress): Promise<void>
 }
+
+export interface StudySet {
+  id: string
+  source: 'daily' | 'free'
+  itemIds: string[]
+  estimatedMinutes: number
+}
