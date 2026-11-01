@@ -1,4 +1,4 @@
-export function Settings({ onRedoPlacement }: { onRedoPlacement(): void }) {
+export function Settings({ onRedoPlacement, japaneseVoiceAvailable }: { onRedoPlacement(): void; japaneseVoiceAvailable: boolean }) {
   return (
     <div className="settings-page">
       <div className="page-intro">
@@ -13,6 +13,12 @@ export function Settings({ onRedoPlacement }: { onRedoPlacement(): void }) {
       <section className="settings-card">
         <h2>학습 기록</h2>
         <p>학습 기록은 이 Windows 사용자 계정의 PC에 저장됩니다. 계정이나 구독은 필요하지 않습니다.</p>
+      </section>
+      <section className="settings-card">
+        <h2>일본어 듣기</h2>
+        {japaneseVoiceAvailable
+          ? <p>이 PC의 일본어 음성으로 듣기 버튼을 사용할 수 있습니다.</p>
+          : <p>일본어 음성이 없습니다. Windows 설정 → 시간 및 언어 → 언어 및 지역에서 일본어를 추가하고 음성 기능을 설치해 주세요. 음성이 없어도 텍스트 문제는 계속 풀 수 있습니다.</p>}
       </section>
     </div>
   )

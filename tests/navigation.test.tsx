@@ -64,6 +64,15 @@ describe('app navigation', () => {
     expect(screen.getByText('총 2일 학습')).toBeTruthy()
   })
 
+  it('keeps text study available when no Japanese voice is installed', async () => {
+    const user = userEvent.setup()
+    appWithProgress(placedProgress())
+    await user.click(await screen.findByRole('button', { name: '설정' }))
+    expect(screen.getByText(/음성이 없어도 텍스트 문제는 계속 풀 수 있습니다/)).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: '홈' }))
+    expect(screen.getByRole('button', { name: '오늘의 학습 시작' })).toBeTruthy()
+  })
+
   it('resumes a saved set at its saved question index', async () => {
     const user = userEvent.setup()
     const progress: Progress = { ...placedProgress(), activeSet: {

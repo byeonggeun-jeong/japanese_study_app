@@ -9,6 +9,7 @@ import { Placement } from './components/Placement'
 import { Practice } from './components/Practice'
 import { ProgressView } from './components/Progress'
 import { Settings } from './components/Settings'
+import { speakJapanese, watchJapaneseVoice } from './speech'
 
 const content = loadContent()
 type Route = 'loading' | 'placement' | 'home' | 'chapters' | 'progress' | 'settings' | 'practice' | 'kana-complete'
@@ -23,6 +24,9 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
   const [route, setRoute] = useState<Route>('loading')
   const [studySet, setStudySet] = useState<StudySet | null>(null)
   const [error, setError] = useState('')
+  const [japaneseVoiceAvailable, setJapaneseVoiceAvailable] = useState(false)
+
+  useEffect(() => watchJapaneseVoice(setJapaneseVoiceAvailable), [])
 
   useEffect(() => {
     let active = true
@@ -98,12 +102,13 @@ export function App({ api = window.studyApp, today = localDate() }: { api?: Stud
           onStart={() => { void start(dailySet) }} onResume={resume} onFree={() => setRoute('chapters')} />}
         {route === 'chapters' && <ChapterList onStart={startFree} />}
         {route === 'progress' && <ProgressView progress={progress} today={today} />}
-        {route === 'settings' && <Settings onRedoPlacement={() => setRoute('placement')} />}
+        {route === 'settings' && <Settings onRedoPlacement={() => setRoute('placement')} japaneseVoiceAvailable={japaneseVoiceAvailable} />}
         {route === 'practice' && studySet && <div className="practice-page">
           <div className="practice-toolbar"><button type="button" className="text-button" onClick={() => setRoute('home')}>학습 나가기</button><span>언제든 다시 이어 풀 수 있어요</span></div>
           <h1 className="practice-title">{practiceTitle}</h1>
           <Practice key={studySet.id} set={studySet} content={content} progress={progress} today={today}
-            onSave={save} onFinish={() => setRoute(studySet.source === 'free' && freeChapter === 'kana' ? 'kana-complete' : 'home')} />
+            onSave={save} onFinish={() => setRoute(studySet.source === 'free' && freeChapter === 'kana' ? 'kana-complete' : 'home')}
+            onSpeak={japaneseVoiceAvailable ? (text) => { speakJapanese(text) } : undefined} />
         </div>}
         {route === 'kana-complete' && <div className="continue-page">
           <div className="completion-card"><p className="eyebrow">문자 반복 학습</p><h1>한 묶음을 끝냈어요</h1><p>원하면 다음 묶음도 바로 이어갈 수 있습니다.</p>
