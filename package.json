@@ -12,7 +12,7 @@
     "test": "vitest run",
     "build": "electron-vite build",
     "make": "npm run build && electron-builder --win nsis",
-    "validate:content": "node scripts/validate-content.mjs"
+    "validate:content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
     "react": "19.3.1",
@@ -25,6 +25,7 @@
     "electron": "45.2.1",
     "electron-builder": "26.18.0",
     "electron-vite": "6.0.0",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vite": "8.3.5",
     "vitest": "5.0.5"

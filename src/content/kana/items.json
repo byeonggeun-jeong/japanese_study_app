@@ -1,0 +1,14 @@
+[
+  {
+    "id": "kana-a-01",
+    "chapter": "kana",
+    "level": "kana",
+    "topicId": "hiragana-basic",
+    "lessonId": "kana-hiragana-1",
+    "kind": "choice",
+    "prompt": "あ의 읽기는 무엇인가요?",
+    "options": ["아", "이", "우", "에"],
+    "answer": "아",
+    "explanation": "あ는 '아'로 읽습니다."
+  }
+]

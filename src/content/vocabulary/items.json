@@ -1,0 +1,14 @@
+[
+  {
+    "id": "vocab-mizu-01",
+    "chapter": "vocabulary",
+    "level": "N5",
+    "topicId": "everyday-nouns",
+    "lessonId": "vocab-everyday-1",
+    "kind": "choice",
+    "prompt": "水의 읽기는 무엇인가요?",
+    "options": ["みず", "やま", "かわ", "そら"],
+    "answer": "みず",
+    "explanation": "水는 みず라고 읽고 '물'이라는 뜻입니다."
+  }
+]

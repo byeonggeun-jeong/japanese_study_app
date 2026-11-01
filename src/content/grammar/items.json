@@ -1,0 +1,14 @@
+[
+  {
+    "id": "grammar-desu-01",
+    "chapter": "grammar",
+    "level": "N5",
+    "topicId": "desu",
+    "lessonId": "grammar-desu-1",
+    "kind": "choice",
+    "prompt": "私は学生___。 빈칸에 들어갈 말은?",
+    "options": ["です", "ます", "を", "に"],
+    "answer": "です",
+    "explanation": "명사 뒤의 です는 정중하게 '입니다'라고 말할 때 사용합니다."
+  }
+]

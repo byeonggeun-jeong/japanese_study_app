@@ -1,0 +1,84 @@
+import { describe, expect, it } from 'vitest'
+import { loadContent } from '../src/learning/content'
+import { validateContent } from '../src/learning/validateContent'
+
+const chapters = ['kana', 'grammar', 'vocabulary', 'sentences'] as const
+
+function sampleContent() {
+  const items = chapters.map((chapter, index) => ({
+    id: `${chapter}-sample`,
+    chapter,
+    level: chapter === 'kana' ? 'kana' : 'N5',
+    topicId: chapter,
+    lessonId: `${chapter}-lesson`,
+    kind: 'choice',
+    prompt: `문제 ${index + 1}`,
+    options: ['정답', '오답'],
+    answer: '정답',
+    explanation: '정답인 이유'
+  }))
+  const lessons = chapters.map((chapter) => ({
+    id: `${chapter}-lesson`,
+    chapter,
+    level: chapter === 'kana' ? 'kana' : 'N5',
+    topicId: chapter,
+    title: `${chapter} 시작`,
+    estimatedMinutes: 10,
+    itemIds: [`${chapter}-sample`]
+  }))
+  return { items, lessons }
+}
+
+describe('learning content', () => {
+  it('accepts a valid item in every chapter', () => {
+    const { items, lessons } = sampleContent()
+    expect(validateContent(items, lessons)).toEqual([])
+  })
+
+  it('rejects duplicate item IDs', () => {
+    const { items, lessons } = sampleContent()
+    expect(validateContent([...items, items[0]], lessons)).toContainEqual(
+      expect.objectContaining({ code: 'duplicate-item-id', id: 'kana-sample' })
+    )
+  })
+
+  it('rejects missing answers and explanations', () => {
+    const { items, lessons } = sampleContent()
+    items[0].answer = ''
+    items[1].explanation = ' '
+    expect(validateContent(items, lessons).map((issue) => issue.code)).toEqual(
+      expect.arrayContaining(['missing-answer', 'missing-explanation'])
+    )
+  })
+
+  it('rejects choices that cannot be selected as an answer', () => {
+    const { items, lessons } = sampleContent()
+    items[0].options = ['오답', '다른 오답']
+    expect(validateContent(items, lessons)).toContainEqual(
+      expect.objectContaining({ code: 'answer-not-in-options', id: 'kana-sample' })
+    )
+  })
+
+  it('rejects an unknown question kind', () => {
+    const { items, lessons } = sampleContent()
+    items[0].kind = 'drawing'
+    expect(validateContent(items, lessons)).toContainEqual(
+      expect.objectContaining({ code: 'invalid-kind', id: 'kana-sample' })
+    )
+  })
+
+  it('rejects a lesson that points at a missing item', () => {
+    const { items, lessons } = sampleContent()
+    lessons[0].itemIds = ['missing-item']
+    expect(validateContent(items, lessons)).toContainEqual(
+      expect.objectContaining({ code: 'missing-lesson-item', id: 'kana-lesson' })
+    )
+  })
+
+  it('loads nonempty seed content for all four chapters', () => {
+    const { items, lessons } = loadContent()
+    expect(new Set(items.map((item) => item.chapter))).toEqual(new Set(chapters))
+    expect(lessons.length).toBeGreaterThan(0)
+    expect(validateContent(items, lessons)).toEqual([])
+  })
+})
