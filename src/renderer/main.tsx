@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import './styles.css'
 
 createRoot(document.getElementById('root')!).render(
   <main style={{ padding: 48, fontFamily: 'sans-serif' }}>
