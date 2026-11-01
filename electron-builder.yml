@@ -1,12 +1,29 @@
 appId: com.codex.japanesestudy
 productName: 일본어공부
+artifactName: JapaneseStudy-Setup-${version}.${ext}
+asar: true
 directories:
   output: dist
 files:
   - out/**/*
   - package.json
+extraResources:
+  - from: licenses
+    to: licenses
+  - from: THIRD_PARTY_NOTICES.md
+    to: THIRD_PARTY_NOTICES.md
+  - from: src/content/vocabulary/lexicon.json
+    to: content/lexicon.json
 win:
-  target: nsis
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: x64
 nsis:
   oneClick: false
+  perMachine: false
+  allowElevation: false
   allowToChangeInstallationDirectory: true
+  installerLanguages:
+    - ko_KR
+  runAfterFinish: false

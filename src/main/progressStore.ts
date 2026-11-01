@@ -10,13 +10,49 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
 }
 
+function nonempty(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function count(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
+}
+
+function date(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  const parsed = new Date(`${value}T00:00:00Z`)
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+}
+
+function timestamp(value: unknown): boolean {
+  return typeof value === 'string' && date(value.slice(0, 10)) && Number.isFinite(Date.parse(value))
+}
+
 function parseProgress(text: string): Progress {
   const value: unknown = JSON.parse(text)
   if (!isRecord(value)) throw new Error('Progress file is damaged')
   if (value.schemaVersion !== 1) throw new Error('Unsupported progress version')
   if (!isRecord(value.answers) || !isRecord(value.review) || !Array.isArray(value.completedDates) ||
-      !value.completedDates.every((date) => typeof date === 'string')) {
+      !value.completedDates.every(date) || new Set(value.completedDates).size !== value.completedDates.length ||
+      !Object.values(value.answers).every((answer) => isRecord(answer) && count(answer.correct) && count(answer.incorrect) && timestamp(answer.lastAnsweredAt)) ||
+      !Object.values(value.review).every((review) => isRecord(review) && date(review.dueDate) && count(review.intervalDays) && review.intervalDays > 0 && count(review.successes))) {
     throw new Error('Progress file is damaged')
+  }
+  if (value.placement !== undefined) {
+    const placement = value.placement
+    if (!isRecord(placement) || !isRecord(placement.starts) || !Object.values(placement.starts).every(nonempty) || !timestamp(placement.completedAt)) {
+      throw new Error('Progress file is damaged')
+    }
+  }
+  if (value.activeSet !== undefined) {
+    const set = value.activeSet
+    if (!isRecord(set) || !nonempty(set.id) || !['daily', 'free'].includes(String(set.source)) ||
+        !Array.isArray(set.itemIds) || set.itemIds.length === 0 || !set.itemIds.every(nonempty) ||
+        new Set(set.itemIds).size !== set.itemIds.length || !count(set.currentIndex) || set.currentIndex > set.itemIds.length ||
+        (set.chapter !== undefined && !['kana', 'grammar', 'vocabulary', 'sentences'].includes(String(set.chapter))) ||
+        (set.range !== undefined && !['all', 'hiragana', 'katakana', 'N5', 'N4'].includes(String(set.range)))) {
+      throw new Error('Progress file is damaged')
+    }
   }
   return value as unknown as Progress
 }

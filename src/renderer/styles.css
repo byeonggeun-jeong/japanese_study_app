@@ -74,6 +74,12 @@ p { line-height: 1.6; }
 .input-question input { min-height: 48px; border: 1px solid #cbb9b8; border-radius: 10px; padding: 10px 14px; }
 .input-question button { justify-self: start; }
 .error-message { color: var(--color-primary); font-weight: 700; margin-top: 16px; }
+.placement-result dl { margin: 24px 0; }
+.placement-result dl > div { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.placement-result dt { font-weight: 700; }
+.placement-result dd { color: var(--color-primary); }
+.completion-card ul { padding-left: 22px; line-height: 1.8; overflow-wrap: anywhere; }
+.completion-card h3 { margin: 24px 0 8px; }
 
 .app-shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
 .sidebar { display: flex; flex-direction: column; min-height: 100vh; padding: 32px 20px; background: var(--color-surface); border-right: 1px solid var(--color-border); }

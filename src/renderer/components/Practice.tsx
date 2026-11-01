@@ -58,7 +58,7 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
 
   if (set.itemIds.length === 0) return <p>이 범위에는 아직 문제가 없습니다.</p>
   if (index >= set.itemIds.length) return <>
-    <Completion set={set} onFinish={() => { void finish() }} busy={busy} />
+    <Completion set={set} items={set.itemIds.flatMap((id) => content.items.filter((item) => item.id === id))} progress={progress} onFinish={() => { void finish() }} busy={busy} />
     {error && <p className="error-message" role="alert">{error}</p>}
   </>
   if (!item) return <p>문제를 찾지 못했습니다. 학습을 다시 시작해 주세요.</p>

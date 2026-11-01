@@ -20,6 +20,12 @@ export function Settings({ onRedoPlacement, japaneseVoiceAvailable }: { onRedoPl
           ? <p>이 PC의 일본어 음성으로 듣기 버튼을 사용할 수 있습니다.</p>
           : <p>일본어 음성이 없습니다. Windows 설정 → 시간 및 언어 → 언어 및 지역에서 일본어를 추가하고 음성 기능을 설치해 주세요. 음성이 없어도 텍스트 문제는 계속 풀 수 있습니다.</p>}
       </section>
+      <section className="settings-card">
+        <h2>앱 정보와 콘텐츠 출처</h2>
+        <p>일본어공부 0.1.0 · 기초부터 N4 대비까지</p>
+        <p>어휘 표기·읽기는 OpenJLPT(CC BY-SA 4.0)를 바탕으로 한국어 뜻과 사용 문맥을 수정했습니다. 문법 설명과 예문은 새로 작성했습니다.</p>
+        <p className="source-address">github.com/evanclan/OpenJLPT<br />creativecommons.org/licenses/by-sa/4.0/</p>
+      </section>
     </div>
   )
 }

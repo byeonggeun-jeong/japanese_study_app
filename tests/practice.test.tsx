@@ -70,6 +70,16 @@ describe('practice flow', () => {
     await user.click(screen.getByRole('button', { name: '학습 마치기' }))
     expect(saved.completedDates).toEqual(['2026-11-02'])
   })
+
+  it('summarizes studied items and their next review date at completion', () => {
+    const progress = { ...createEmptyProgress(),
+      activeSet: { id: set.id, source: 'daily' as const, itemIds: set.itemIds, currentIndex: 2 },
+      review: { q1: { dueDate: '2026-11-02', intervalDays: 1, successes: 0 } } }
+    render(<Practice set={set} content={content} progress={progress} today="2026-11-01" onSave={async () => {}} onFinish={() => {}} />)
+    expect(screen.getByRole('heading', { name: '이번에 익힌 내용' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: '다음 복습' })).toBeTruthy()
+    expect(screen.getByText(/2026-11-02/)).toBeTruthy()
+  })
   it('records an answer, explains it, and moves to the next question', async () => {
     const user = userEvent.setup()
     let saved = createEmptyProgress()

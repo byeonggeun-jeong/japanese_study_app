@@ -104,9 +104,9 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
       </aside>
       <main className="main-content">
         {error && <div className="app-error" role="alert">{error}</div>}
-        {route === 'placement' && <Placement items={content.items} onComplete={(result) => {
-          void save(applyPlacement(progress, result, new Date().toISOString())).then(() => setRoute('home'))
-            .catch(() => setError('진단 결과를 저장하지 못했습니다. 다시 시도해 주세요.'))
+        {route === 'placement' && <Placement items={content.items} onComplete={async (result) => {
+          await save(applyPlacement(progress, result, new Date().toISOString()))
+          setRoute('home')
         }} />}
         {route === 'home' && <Home progress={progress} today={today} dailySet={dailySet}
           onStart={() => { void start(dailySet) }} onResume={resume} onFree={() => setRoute('chapters')} />}

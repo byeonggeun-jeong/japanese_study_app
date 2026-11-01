@@ -9,6 +9,7 @@ function createWindow(): void {
     height: 800,
     minWidth: 850,
     minHeight: 620,
+    autoHideMenuBar: true,
     backgroundColor: '#FBF9F8',
     title: '일본어공부',
     webPreferences: getWindowWebPreferences(join(__dirname, '../preload/index.js'))
@@ -24,14 +25,25 @@ function createWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
-  const progressPath = join(app.getPath('userData'), 'study-data', 'progress.json')
-  ipcMain.handle('progress:load', () => loadProgress(progressPath))
-  ipcMain.handle('progress:save', (_event, progress) => saveProgress(progressPath, progress))
-  createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    const window = BrowserWindow.getAllWindows()[0]
+    if (!window) return
+    if (window.isMinimized()) window.restore()
+    window.show()
+    window.focus()
   })
-})
+  app.whenReady().then(() => {
+    const progressPath = join(app.getPath('userData'), 'study-data', 'progress.json')
+    ipcMain.handle('progress:load', () => loadProgress(progressPath))
+    ipcMain.handle('progress:save', (_event, progress) => saveProgress(progressPath, progress))
+    createWindow()
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+  })
 
-app.on('window-all-closed', () => app.quit())
+  app.on('window-all-closed', () => app.quit())
+}
