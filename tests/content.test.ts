@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { loadContent } from '../src/learning/content'
 import { validateContent } from '../src/learning/validateContent'
+import { loadContent } from '../src/learning/content'
+import lexicon from '../src/content/vocabulary/lexicon.json'
 
 const chapters = ['kana', 'grammar', 'vocabulary', 'sentences'] as const
 
@@ -59,6 +60,14 @@ describe('learning content', () => {
     )
   })
 
+  it('rejects duplicate answer choices', () => {
+    const { items, lessons } = sampleContent()
+    items[0].options = ['정답', '오답', '오답']
+    expect(validateContent(items, lessons)).toContainEqual(
+      expect.objectContaining({ code: 'duplicate-options', id: 'kana-sample' })
+    )
+  })
+
   it('rejects an unknown question kind', () => {
     const { items, lessons } = sampleContent()
     items[0].kind = 'drawing'
@@ -83,10 +92,48 @@ describe('learning content', () => {
     )
   })
 
+  it('rejects an item without a matching lesson and topic', () => {
+    const { items, lessons } = sampleContent()
+    items[0].lessonId = 'missing'
+    items[1].topicId = 'kana'
+    expect(validateContent(items, lessons).map((issue) => issue.code)).toEqual(
+      expect.arrayContaining(['orphan-item', 'lesson-item-mismatch'])
+    )
+  })
+
   it('loads nonempty seed content for all four chapters', () => {
     const { items, lessons } = loadContent()
     expect(new Set(items.map((item) => item.chapter))).toEqual(new Set(chapters))
     expect(lessons.length).toBeGreaterThan(0)
     expect(validateContent(items, lessons)).toEqual([])
+  })
+
+  it('covers the agreed N4 preparation inventory', () => {
+    const { items, lessons } = loadContent()
+    for (const [chapter, minimum] of Object.entries({ vocabulary: 1200, grammar: 100, sentences: 300 })) {
+      expect(items.filter((item) => item.chapter === chapter).length, chapter).toBeGreaterThanOrEqual(minimum)
+    }
+    expect(lessons.length).toBeGreaterThanOrEqual(120)
+    expect(new Set(items.map((item) => item.id)).size).toBe(items.length)
+    expect(items.every((item) => item.explanation.trim().length > 0)).toBe(true)
+    for (const chapter of ['grammar', 'vocabulary', 'sentences'] as const) {
+      expect(items.some((item) => item.chapter === chapter && item.level === 'N5')).toBe(true)
+      expect(items.some((item) => item.chapter === chapter && item.level === 'N4')).toBe(true)
+    }
+  })
+
+  it('keeps vocabulary entries distinct and Korean definitions present', () => {
+    const pairs = lexicon.map((entry) => `${entry.word}:${entry.reading}`)
+    expect(new Set(pairs).size).toBe(pairs.length)
+    expect(lexicon.every((entry) => entry.meaning.trim() && !/[A-Za-z]/.test(entry.meaning))).toBe(true)
+  })
+
+  it('includes both scripts and special sound practice', () => {
+    const kanaTopics = new Set(loadContent().items.filter((item) => item.chapter === 'kana').map((item) => item.topicId))
+    for (const script of ['hiragana', 'katakana']) {
+      for (const sound of ['basic', 'voiced', 'combined', 'special']) {
+        expect(kanaTopics.has(`${script}-${sound}`)).toBe(true)
+      }
+    }
   })
 })

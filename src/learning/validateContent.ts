@@ -39,6 +39,8 @@ export function validateContent(items: unknown[], lessons: unknown[]): Validatio
     if (item.kind === 'choice' || item.kind === 'listen') {
       if (!Array.isArray(item.options) || !item.options.includes(item.answer)) {
         issues.push({ code: 'answer-not-in-options', id })
+      } else if (new Set(item.options).size !== item.options.length) {
+        issues.push({ code: 'duplicate-options', id })
       }
     }
     if (item.kind === 'listen' && !nonempty(item.speechText)) {
@@ -63,12 +65,16 @@ export function validateContent(items: unknown[], lessons: unknown[]): Validatio
         if (!itemIds.has(itemId)) issues.push({ code: 'missing-lesson-item', id })
         else {
           const item = itemsById.get(itemId)!
-          if (item.lessonId !== id || item.chapter !== lesson.chapter || item.level !== lesson.level) {
+          if (item.lessonId !== id || item.chapter !== lesson.chapter || item.level !== lesson.level || item.topicId !== lesson.topicId) {
             issues.push({ code: 'lesson-item-mismatch', id })
           }
         }
       }
     }
+  }
+
+  for (const [id, item] of itemsById) {
+    if (!lessonIds.has(String(item.lessonId))) issues.push({ code: 'orphan-item', id })
   }
 
   return issues
