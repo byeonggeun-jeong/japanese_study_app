@@ -30,3 +30,31 @@ export interface StudyContent {
   items: StudyItem[]
   lessons: Lesson[]
 }
+
+export interface ReviewState {
+  dueDate: string
+  intervalDays: number
+  successes: number
+}
+
+export interface Progress {
+  schemaVersion: 1
+  placement?: {
+    starts: Partial<Record<Chapter, string>>
+    completedAt: string
+  }
+  answers: Record<string, { correct: number; incorrect: number; lastAnsweredAt: string }>
+  review: Record<string, ReviewState>
+  completedDates: string[]
+  activeSet?: {
+    id: string
+    source: 'daily' | 'free'
+    itemIds: string[]
+    currentIndex: number
+  }
+}
+
+export interface StudyAppAPI {
+  loadProgress(): Promise<Progress>
+  saveProgress(progress: Progress): Promise<void>
+}

@@ -1,6 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { StudyAppAPI } from '../shared/types'
 
-contextBridge.exposeInMainWorld('studyApp', {
+const api: StudyAppAPI = {
   loadProgress: () => ipcRenderer.invoke('progress:load'),
-  saveProgress: (progress: unknown) => ipcRenderer.invoke('progress:save', progress)
-})
+  saveProgress: (progress) => ipcRenderer.invoke('progress:save', progress)
+}
+
+contextBridge.exposeInMainWorld('studyApp', api)

@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'node:path'
 import { getWindowWebPreferences } from './windowOptions'
+import { loadProgress, saveProgress } from './progressStore'
 
 function createWindow(): void {
   const window = new BrowserWindow({
@@ -24,6 +25,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  const progressPath = join(app.getPath('userData'), 'study-data', 'progress.json')
+  ipcMain.handle('progress:load', () => loadProgress(progressPath))
+  ipcMain.handle('progress:save', (_event, progress) => saveProgress(progressPath, progress))
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
