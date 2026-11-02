@@ -4,6 +4,7 @@ import { applyPlacement } from '../learning/placement'
 import { buildDailySet, buildFreeSet } from '../learning/scheduler'
 import type { Chapter, Progress, StudyAppAPI, StudyRange, StudySet } from '../shared/types'
 import { ChapterList } from './components/ChapterList'
+import { KanaChart } from './components/KanaChart'
 import { Home } from './components/Home'
 import { Placement } from './components/Placement'
 import { Practice } from './components/Practice'
@@ -12,7 +13,7 @@ import { Settings } from './components/Settings'
 import { speakJapanese, watchJapaneseVoice } from './speech'
 
 const content = loadContent()
-type Route = 'loading' | 'placement' | 'home' | 'chapters' | 'progress' | 'settings' | 'practice' | 'kana-complete'
+type Route = 'loading' | 'placement' | 'home' | 'chapters' | 'progress' | 'settings' | 'practice' | 'kana-complete' | 'kana-chart'
 
 function localDate(): string {
   const now = new Date()
@@ -103,9 +104,8 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
       <a className="skip-link" href="#study-main">본문으로 이동</a>
       <aside className="sidebar">
         <div className="brand"><span className="brand-mark" aria-hidden="true">あ</span><span>일본어공부</span></div>
-        <p className="sidebar-caption">기초부터 N4까지</p>
         {progress.placement && <nav aria-label="주요 메뉴">
-          <button type="button" aria-current={route === 'home' ? 'page' : undefined} className={route === 'home' ? 'active' : ''} onClick={() => setRoute('home')}>홈</button>
+          <button type="button" aria-current={(route === 'home' || route === 'kana-chart') ? 'page' : undefined} className={(route === 'home' || route === 'kana-chart') ? 'active' : ''} onClick={() => setRoute('home')}>오늘의 학습</button>
           <button type="button" aria-current={route === 'chapters' ? 'page' : undefined} className={route === 'chapters' ? 'active' : ''} onClick={() => setRoute('chapters')}>자유 연습</button>
           <button type="button" aria-current={route === 'progress' ? 'page' : undefined} className={route === 'progress' ? 'active' : ''} onClick={() => setRoute('progress')}>진도</button>
           <button type="button" aria-current={route === 'settings' ? 'page' : undefined} className={route === 'settings' ? 'active' : ''} onClick={() => setRoute('settings')}>설정</button>
@@ -119,7 +119,8 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
           setRoute('home')
         }} />}
         {route === 'home' && <Home progress={progress} today={today} dailySet={dailySet}
-          onStart={() => { void start(dailySet) }} onResume={resume} onFree={() => setRoute('chapters')} />}
+          onStart={() => { void start(dailySet) }} onResume={resume} onKanaChart={() => setRoute('kana-chart')} />}
+        {route === 'kana-chart' && <KanaChart />}
         {route === 'chapters' && <ChapterList onStart={startFree} />}
         {route === 'progress' && <ProgressView progress={progress} today={today} content={content} />}
         {route === 'settings' && <Settings onRedoPlacement={() => setRoute('placement')} japaneseVoiceAvailable={japaneseVoiceAvailable} />}
@@ -133,7 +134,7 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
         {route === 'kana-complete' && <div className="continue-page">
           <div className="completion-card"><h1>문자 연습 완료</h1><p>다음 10문제를 시작할 수 있습니다.</p>
             <button type="button" className="primary-button" onClick={() => startFree('kana', studySet?.range ?? 'all')}>계속 문자 연습</button>
-            <button type="button" className="secondary-button" onClick={() => setRoute('home')}>홈으로</button>
+            <button type="button" className="secondary-button" onClick={() => setRoute('home')}>오늘의 학습으로</button>
           </div>
         </div>}
       </main>

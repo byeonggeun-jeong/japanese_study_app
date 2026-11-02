@@ -1,13 +1,13 @@
 import { getStreak } from '../../learning/streak'
 import type { Progress, StudySet } from '../../shared/types'
 
-export function Home({ progress, today, dailySet, onStart, onResume, onFree }: {
+export function Home({ progress, today, dailySet, onStart, onResume, onKanaChart }: {
   progress: Progress
   today: string
   dailySet: StudySet
   onStart(): void
   onResume(): void
-  onFree(): void
+  onKanaChart(): void
 }) {
   const streak = getStreak(progress.completedDates, today)
   const studied = progress.completedDates.includes(today)
@@ -42,8 +42,8 @@ export function Home({ progress, today, dailySet, onStart, onResume, onFree }: {
         </section>
       </div>
       <section className="home-secondary">
-        <div><h2>자유 연습</h2><p>문자 · 문법 · 단어 · 문장</p></div>
-        <button type="button" className="secondary-button" onClick={onFree}>챕터 선택 <span aria-hidden="true">›</span></button>
+        <div><h2>히라가나·가타카나</h2><p>기본 문자 · 탁음 · 요음</p></div>
+        <button type="button" className="secondary-button" onClick={onKanaChart}>문자표 보기 <span aria-hidden="true">›</span></button>
       </section>
     </div>
   )

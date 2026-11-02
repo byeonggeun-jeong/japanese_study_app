@@ -78,7 +78,7 @@ describe('app navigation', () => {
     await user.click(screen.getByRole('button', { name: '문자 연습 시작' }))
     expect(screen.getByRole('heading', { name: '문자 자유 연습' })).toBeTruthy()
     await user.click(screen.getByRole('button', { name: '학습 나가기' }))
-    await user.click(screen.getByRole('button', { name: '홈' }))
+    await user.click(screen.getByRole('button', { name: '오늘의 학습' }))
     expect(screen.getByRole('heading', { name: '오늘의 학습' })).toBeTruthy()
   })
 
@@ -95,8 +95,8 @@ describe('app navigation', () => {
     const user = userEvent.setup()
     appWithProgress(placedProgress())
     await user.click(await screen.findByRole('button', { name: '설정' }))
-    expect(screen.getByText(/음성이 없어도 텍스트 문제는 계속 풀 수 있습니다/)).toBeTruthy()
-    await user.click(screen.getByRole('button', { name: '홈' }))
+    expect(screen.getByText(/음성이 없어 텍스트로 학습합니다/)).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: '오늘의 학습' }))
     expect(screen.getByRole('button', { name: '오늘의 학습 시작' })).toBeTruthy()
   })
 

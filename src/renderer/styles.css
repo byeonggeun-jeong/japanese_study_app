@@ -52,8 +52,7 @@ select, input { min-height: 44px; border: 1px solid var(--color-control); border
 .sidebar { display: flex; flex-direction: column; padding: 36px 20px; background: var(--color-surface); }
 .brand { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 800; white-space: nowrap; padding: 0 12px; }
 .brand-mark { color: var(--color-primary); font-size: 32px; line-height: 1; font-weight: 700; }
-.sidebar-caption { margin: 12px 12px 36px; color: var(--color-muted); font-size: 14px; }
-.sidebar nav { display: grid; gap: 8px; }
+.sidebar nav { display: grid; gap: 8px; margin-top: 36px; }
 .sidebar nav button { border: 0; border-radius: 14px; background: transparent; padding: 16px; text-align: left; color: var(--color-muted); font-size: 16px; font-weight: 600; }
 .sidebar nav button.active { background: var(--color-background); color: var(--color-text); }
 @media (hover: hover) and (pointer: fine) { .sidebar nav button:hover { background: var(--color-background); color: var(--color-text); } }
@@ -162,7 +161,6 @@ select, input { min-height: 44px; border: 1px solid var(--color-control); border
   .app-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .sidebar { padding: 20px 24px 12px; }
   .brand { padding: 0; font-size: 20px; }
-  .sidebar-caption { display: none; }
   .sidebar nav { display: flex; gap: 4px; margin-top: 16px; }
   .sidebar nav button { padding: 12px 16px; }
   .main-content { padding: 32px 24px 48px; }
@@ -172,7 +170,7 @@ select, input { min-height: 44px; border: 1px solid var(--color-control); border
   h1 { font-size: 26px; }
   .main-content { padding: 28px 20px 40px; }
   .sidebar { padding: 20px 20px 12px; }
-  .sidebar nav button { font-size: 15px; padding: 12px 14px; }
+  .sidebar nav button { font-size: 14px; padding: 12px 8px; white-space: nowrap; }
   .title-row { flex-wrap: wrap; gap: 8px; }
   .title-row time { font-size: 13px; }
   .home-overview, .chapter-grid { grid-template-columns: 1fr; }
@@ -212,3 +210,33 @@ progress::-moz-progress-bar { background: var(--color-primary); border-radius: 8
 .calendar-check { position: absolute; inset-block-start: 3px; inset-inline-end: 3px; }
 .skip-link { position: absolute; z-index: 10; inset-block-start: 8px; inset-inline-start: 8px; padding: 12px 16px; border-radius: 8px; background: var(--color-surface); color: var(--color-text); transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
+
+.settings-action { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.settings-action > div { min-width: 0; }
+.settings-action h2 { margin-bottom: 8px; word-break: keep-all; }
+.settings-action p { margin: 0; word-break: keep-all; }
+.settings-action > button { flex: none; }
+.project-links { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.project-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-text); text-underline-offset: 4px; }
+.script-switch { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 24px; border-radius: 16px; background: var(--color-active); }
+.script-switch button { border: 0; border-radius: 12px; padding: 12px 20px; background: transparent; font-weight: 600; }
+.script-switch button[aria-pressed='true'] { background: var(--color-surface); color: var(--color-text); }
+.kana-tables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.kana-table-card { min-width: 0; padding: 24px; background: var(--color-surface); border-radius: 20px; }
+.kana-table-card:first-child { grid-row: span 2; }
+.kana-table-card table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.kana-table-card caption { padding-bottom: 16px; text-align: start; font-size: 20px; font-weight: 700; }
+.kana-table-card th { padding: 8px 0; font-size: 14px; font-weight: 500; color: var(--color-muted); }
+.kana-table-card td { padding: 10px 0; text-align: center; }
+.kana-glyph { display: block; font-size: 26px; line-height: 1.4; }
+.kana-reading { display: block; margin-top: 3px; font-size: 13px; color: var(--color-muted); }
+.kana-extra { display: flex; justify-content: center; align-items: baseline; gap: 12px; margin: 16px 0 0; color: var(--color-muted); font-size: 14px; }
+.kana-extra [lang='ja'] { color: var(--color-text); font-size: 26px; }
+@media (max-width: 700px) {
+  .settings-action { gap: 12px; }
+  .settings-action h2 { font-size: 18px; }
+  .settings-action > button { font-size: 15px; padding: 12px; }
+  .kana-tables { grid-template-columns: 1fr; }
+  .kana-table-card:first-child { grid-row: auto; }
+  .kana-table-card { padding: 20px; }
+}

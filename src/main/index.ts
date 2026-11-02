@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'node:path'
-import { getWindowWebPreferences } from './windowOptions'
+import { getWindowWebPreferences, isAllowedExternalUrl } from './windowOptions'
 import { loadProgress, saveProgress } from './progressStore'
 
 function createWindow(): void {
@@ -15,7 +15,10 @@ function createWindow(): void {
     webPreferences: getWindowWebPreferences(join(__dirname, '../preload/index.js'))
   })
 
-  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (isAllowedExternalUrl(url)) void shell.openExternal(url)
+    return { action: 'deny' }
+  })
   window.webContents.on('will-navigate', (event) => event.preventDefault())
 
   if (process.env.ELECTRON_RENDERER_URL) {
