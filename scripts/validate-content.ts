@@ -1,8 +1,9 @@
 import { loadContent } from '../src/learning/content'
-import { validateContent } from '../src/learning/validateContent'
+import { validateContent, validateContentIdentity } from '../src/learning/validateContent'
+import manifest from '../src/content/id-manifest.json'
 
 const { items, lessons } = loadContent()
-const issues = validateContent(items, lessons)
+const issues = [...validateContent(items, lessons), ...validateContentIdentity(items, manifest)]
 const targets = { vocabulary: 1200, grammar: 100, sentences: 300 } as const
 for (const [chapter, minimum] of Object.entries(targets)) {
   const count = items.filter((item) => item.chapter === chapter).length

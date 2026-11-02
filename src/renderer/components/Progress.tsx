@@ -19,9 +19,7 @@ export function ProgressView({ progress, today, content }: { progress: Progress;
   return (
     <div className="progress-page">
       <div className="page-intro">
-        <p className="eyebrow">쌓인 만큼 보이는 성장</p>
         <h1>학습 기록</h1>
-        <p>꾸준히 쌓아 온 시간을 확인해 보세요.</p>
       </div>
       <div className="progress-summary">
         <section className="stat-card"><span className="stat-label">학습일</span><strong>총 {progress.completedDates.length}일 학습</strong></section>
@@ -31,7 +29,7 @@ export function ProgressView({ progress, today, content }: { progress: Progress;
       </div>
       <section className="calendar-card">
         <h2>챕터별 진도</h2>
-        <p>한 번 이상 풀어 본 문제와 반복해서 익힌 문제를 확인해요.</p>
+        <p>풀어 본 문제 / 전체 문제</p>
         <div className="chapter-progress-list">
           {([['kana', '문자'], ['grammar', '문법'], ['vocabulary', '단어'], ['sentences', '문장']] as [Chapter, string][]).map(([chapter, title]) => {
             const items = content.items.filter((item) => item.chapter === chapter)
@@ -46,12 +44,15 @@ export function ProgressView({ progress, today, content }: { progress: Progress;
       </section>
       <section className="calendar-card">
         <h2>최근 4주</h2>
-        <p>색이 채워진 날에 한 묶음 이상 학습했어요.</p>
+        <p>학습을 마친 날에 색이 채워집니다.</p>
         <div className="study-calendar" aria-label="최근 4주 학습 달력">
           {precedingDates(today).map((date) => (
             <div key={date} className={`calendar-day ${studied.has(date) ? 'studied' : ''}`}
               aria-label={`${date} ${studied.has(date) ? '학습 완료' : '학습 없음'}`}
-              title={`${date} ${studied.has(date) ? '학습 완료' : '학습 없음'}`}>{Number(date.slice(-2))}</div>
+              title={`${date} ${studied.has(date) ? '학습 완료' : '학습 없음'}`}>
+              {Number(date.slice(-2))}
+              {studied.has(date) && <svg className="calendar-check" aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="m3 8 3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+            </div>
           ))}
         </div>
       </section>

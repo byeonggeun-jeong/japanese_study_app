@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { validateContent } from '../src/learning/validateContent'
+import manifest from '../src/content/id-manifest.json'
+import { validateContent, validateContentIdentity } from '../src/learning/validateContent'
 import { loadContent } from '../src/learning/content'
 import lexicon from '../src/content/vocabulary/lexicon.json'
 
@@ -146,4 +147,30 @@ describe('learning content', () => {
       }
     }
   })
+})
+
+it('provides real input and natural sentence assembly at both levels', () => {
+  const { items } = loadContent()
+  expect(items.some((item) => item.chapter === 'kana' && item.kind === 'input')).toBe(true)
+  for (const level of ['N5', 'N4']) {
+    expect(items.filter((item) => item.level === level && item.kind === 'arrange').length).toBeGreaterThanOrEqual(8)
+  }
+})
+it('rejects arrangement tokens that cannot form the answer', () => {
+  const { items, lessons } = sampleContent()
+  items[0] = { ...items[0], kind: 'arrange', options: ['水', 'を', 'ください'], answer: '学校へ行きます' }
+  expect(validateContent(items, lessons)).toContainEqual({ code: 'invalid-arrangement', id: items[0].id })
+})
+it('translates received help as a result rather than a request', () => {
+  const item = loadContent().items.find((item) => item.speechText === '先生に文を直してもらいました。' && item.chapter === 'sentences')!
+  expect(item.answer).toBe('선생님께서 문장을 고쳐 주셨습니다.')
+})
+
+it('blocks renamed or reassigned persistent content identities', () => {
+  const content = loadContent()
+  expect(validateContentIdentity(content.items, manifest)).toEqual([])
+  const renamed = content.items.map((item, index) => index === 0 ? { ...item, id: 'renamed' } : item)
+  expect(validateContentIdentity(renamed, manifest).length).toBeGreaterThan(0)
+  const reassigned = content.items.map((item) => item.id === 'grammar-created-n5-001' ? { ...item, guide: { ...item.guide!, title: 'different grammar' } } : item)
+  expect(validateContentIdentity(reassigned, manifest)).toContainEqual({ code: 'reassigned-item-id', id: 'grammar-created-n5-001' })
 })

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { recordAnswer } from '../../learning/review'
 import { finishSet } from '../../learning/scheduler'
 import { orderOptions } from '../../learning/options'
@@ -23,7 +23,14 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [shownGuideFor, setShownGuideFor] = useState<string | null>(null)
+  const [revealedSourceFor, setRevealedSourceFor] = useState<string | null>(null)
   const item = content.items.find((entry) => entry.id === set.itemIds[index])
+  const questionHeading = useRef<HTMLHeadingElement>(null)
+  const feedbackAction = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (feedback) feedbackAction.current?.focus()
+    else questionHeading.current?.focus()
+  }, [item?.id, feedback, shownGuideFor])
 
   async function answer(value: string): Promise<void> {
     if (!item || busy || feedback) return
@@ -66,14 +73,14 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
   if (item.guide && !progress.answers[item.id] && shownGuideFor !== item.id) return (
     <section className="practice">
       <article className="question-card guide-card">
-        <p className="eyebrow">새로 익히기 · {index + 1} / {set.itemIds.length}</p>
-        <h2>{item.guide.title}</h2>
+        <p className="question-meta">학습 · {index + 1} / {set.itemIds.length}</p>
+        <h2 ref={questionHeading} tabIndex={-1}>{item.guide.title}</h2>
         <p>{item.guide.text}</p>
         {item.guide.examples.map((example) => <div className="guide-example" key={example.ja}>
           <p lang="ja">{example.ja}</p>{example.ko && <p>{example.ko}</p>}
         </div>)}
         {onSpeak && item.speechText && <button className="secondary-button" type="button" onClick={() => onSpeak(item.speechText!)}>발음 듣기</button>}
-        <button type="button" className="primary-button" onClick={() => setShownGuideFor(item.id)}>연습해 보기</button>
+        <button type="button" className="primary-button" onClick={() => setShownGuideFor(item.id)}>문제 풀기</button>
       </article>
     </section>
   )
@@ -86,18 +93,23 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
         <progress value={index} max={set.itemIds.length} aria-label="학습 진행률" />
       </div>
       <div className="question-card">
-        <p className="eyebrow">{item.chapter === 'kana' ? '문자' : item.chapter === 'grammar' ? '문법' : item.chapter === 'vocabulary' ? '단어' : '문장'}</p>
-        <h2>{item.prompt}</h2>
+        <p className="question-meta">{item.chapter === 'kana' ? '문자' : item.chapter === 'grammar' ? '문법' : item.chapter === 'vocabulary' ? '단어' : '문장'}</p>
+        <h2 ref={questionHeading} tabIndex={-1}>{item.kind === 'listen' && onSpeak ? '문장을 듣고 뜻을 고르세요' : item.prompt}</h2>
+        {item.kind === 'listen' && onSpeak && !feedback && <div className="listening-source">
+          {revealedSourceFor === item.id ? <p lang="ja">{item.speechText}</p> :
+            <button type="button" className="text-button" onClick={() => setRevealedSourceFor(item.id)}>원문 보기</button>}
+        </div>}
         {!feedback && !busy && (item.kind === 'choice' || item.kind === 'listen') &&
           <ChoiceQuestion options={options} onAnswer={(value) => { void answer(value) }} speechText={item.speechText} onSpeak={onSpeak} />}
         {!feedback && !busy && item.kind === 'arrange' && <ArrangeQuestion key={item.id} options={options} onAnswer={(value) => { void answer(value) }} />}
         {!feedback && !busy && item.kind === 'input' && <InputQuestion onAnswer={(value) => { void answer(value) }} />}
         {busy && <p role="status">저장 중...</p>}
         {feedback && <div className={`answer-feedback ${feedback.correct ? 'correct' : 'incorrect'}`} role="status">
-          <h3>{feedback.correct ? '정답이에요' : '다시 익혀 볼게요'}</h3>
+          <h3>{feedback.correct ? '정답' : '정답 확인'}</h3>
+          {item.kind === 'listen' && onSpeak && <p lang="ja">{item.speechText}</p>}
           {!feedback.correct && <p>정답: {feedback.item.answer}</p>}
           <p>{feedback.item.explanation}</p>
-          <button type="button" className="primary-button" onClick={() => { setFeedback(null); setIndex(index + 1) }}>
+          <button ref={feedbackAction} type="button" className="primary-button" onClick={() => { setFeedback(null); setIndex(index + 1) }}>
             {index + 1 === set.itemIds.length ? '결과 보기' : '다음 문제'}
           </button>
         </div>}

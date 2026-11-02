@@ -31,9 +31,9 @@ describe('app navigation', () => {
     vi.setSystemTime(new Date(2026, 10, 1, 23, 59, 40))
     render(<App api={{ loadProgress: async () => placedProgress(), saveProgress: async () => {} }} />)
     await act(async () => {})
-    expect(screen.getByText('TODAY · 2026-11-01')).toBeTruthy()
+    expect(screen.getByText('2026.11.01')).toBeTruthy()
     await act(async () => { vi.advanceTimersByTime(60_000) })
-    expect(screen.getByText('TODAY · 2026-11-02')).toBeTruthy()
+    expect(screen.getByText('2026.11.02')).toBeTruthy()
   })
 
   it('shows progress separately for each chapter', async () => {
@@ -121,4 +121,24 @@ describe('app navigation', () => {
     await user.click(await screen.findByRole('button', { name: '계속 문자 연습' }))
     expect(screen.getByRole('heading', { name: '문자 자유 연습' })).toBeTruthy()
   })
+})
+
+
+it('shows the resumed batch size and progress instead of the unrelated daily set', async () => {
+  const progress = placedProgress()
+  progress.activeSet = { id: 'free-kana-resume', source: 'free', chapter: 'kana', itemIds: ['kana-a-01', 'kana-i-01'], currentIndex: 1 }
+  render(<App api={{ loadProgress: async () => progress, saveProgress: async () => {} }} today="2026-11-02" />)
+  expect(await screen.findByText('1 / 2문제 완료')).toBeTruthy()
+  expect(screen.getByRole('heading', { name: '진행 중인 학습' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: '이어 풀기' })).toBeTruthy()
+})
+
+
+it('moves focus to the new page and identifies the active navigation item', async () => {
+  const user = userEvent.setup()
+  appWithProgress(placedProgress())
+  await screen.findByRole('heading', { name: '오늘의 학습' })
+  await user.click(screen.getByRole('button', { name: '설정' }))
+  expect(screen.getByRole('heading', { name: '설정' })).toBe(document.activeElement)
+  expect(screen.getByRole('button', { name: '설정' }).getAttribute('aria-current')).toBe('page')
 })

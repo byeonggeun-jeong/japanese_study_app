@@ -4,3 +4,5 @@ dist/
 .superpowers/
 *.log
 .test-progress-*/
+
+.taste-skill/

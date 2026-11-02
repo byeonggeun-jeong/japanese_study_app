@@ -38,11 +38,12 @@ export function buildGrammarContent(): { items: StudyItem[]; lessons: Lesson[] }
       const id = `grammar-created-${level.toLowerCase()}-${String(index + 1).padStart(3, '0')}`
       lessons[lessons.length - 1].itemIds.push(id)
       const distractors = meanings.filter((meaning) => meaning !== point.meaning)
+      const cloze = ['を', 'に', 'から', 'まで'].includes(point.pattern)
       items.push({
         id, chapter: 'grammar', level, topicId: `core-${lessonNumber}`, lessonId,
-        kind: 'choice', prompt: `「${point.pattern}」의 쓰임은 무엇인가요?\n${point.examples[0]}`,
-        options: [point.meaning, ...[0, 1, 2].map((offset) => distractors[(index * 5 + offset * 7) % distractors.length])],
-        answer: point.meaning,
+        kind: 'choice', prompt: cloze ? `빈칸에 들어갈 조사를 고르세요.\n${point.examples[0].replace(point.pattern, '（　）')}\n${point.examples[1]}` : `「${point.pattern}」의 쓰임은 무엇인가요?\n${point.examples[0]}`,
+        options: cloze ? [point.pattern, ...['を', 'に', 'から', 'まで'].filter((option) => option !== point.pattern)] : [point.meaning, ...[0, 1, 2].map((offset) => distractors[(index * 5 + offset * 7) % distractors.length])],
+        answer: cloze ? point.pattern : point.meaning,
         explanation: `${grammarNotes[point.pattern]}\n${point.examples[0]} ${point.examples[1]}\n${point.examples[2]} ${point.examples[3]}`,
         speechText: point.examples[0],
         guide: { title: point.pattern, text: `${point.meaning}. ${grammarNotes[point.pattern]}`, examples: [

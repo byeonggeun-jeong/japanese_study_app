@@ -39,7 +39,8 @@ export function buildKanaContent(): { items: StudyItem[]; lessons: Lesson[] } {
         const distractors = cues.filter((cue) => cue !== entry.cue)
         items.push({
           id, chapter: 'kana', level: 'kana', topicId: `${script}-${group}`, lessonId,
-          kind: 'choice', prompt: `「${entry.kana}」의 소리는 무엇에 가깝나요?`,
+          kind: group === 'basic' && index % 7 === 2 ? 'input' : 'choice',
+          prompt: `「${entry.kana}」의 소리는 무엇에 가깝나요?${group === 'basic' && index % 7 === 2 ? ' 한글로 입력하세요.' : ''}`,
           options: [entry.cue, ...[0, 1, 2].map((offset) => distractors[(index * 3 + offset * 7) % distractors.length])],
           answer: entry.cue,
           explanation: `「${entry.kana}」는 한국어로 ‘${entry.cue}’에 가까운 소리입니다. 일본어의 길이와 입 모양도 함께 익혀 보세요.`,

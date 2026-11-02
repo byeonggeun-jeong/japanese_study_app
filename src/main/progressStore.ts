@@ -1,9 +1,21 @@
 import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
+import { setTimeout as delay } from 'node:timers/promises'
 import type { Progress } from '../shared/types'
 
 export function createEmptyProgress(): Progress {
   return { schemaVersion: 1, answers: {}, review: {}, completedDates: [] }
+}
+
+async function replaceProgress(temporary: string, path: string): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try { await rename(temporary, path); return }
+    catch (error) {
+      // Windows can briefly lock the destination after a read or virus scan.
+      if (attempt >= 4 || !['EPERM', 'EBUSY'].includes((error as NodeJS.ErrnoException).code ?? '')) throw error
+      await delay(25 * 2 ** attempt)
+    }
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,10 +86,10 @@ export async function loadProgress(path: string): Promise<Progress> {
       const backup = await readFile(`${path}.bak`, 'utf8')
       const progress = parseProgress(backup)
       await writeFile(`${path}.tmp`, backup, 'utf8')
-      await rename(`${path}.tmp`, path)
+      await replaceProgress(`${path}.tmp`, path)
       return progress
-    } catch {
-      throw new Error('Progress file is damaged')
+    } catch (recoveryError) {
+      throw new Error('Progress file is damaged', { cause: recoveryError })
     }
   }
 }
@@ -96,5 +108,5 @@ export async function saveProgress(path: string, progress: Progress): Promise<vo
   }
 
   await writeFile(`${path}.tmp`, JSON.stringify(progress), 'utf8')
-  await rename(`${path}.tmp`, path)
+  await replaceProgress(`${path}.tmp`, path)
 }

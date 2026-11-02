@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { loadContent } from '../learning/content'
 import { applyPlacement } from '../learning/placement'
 import { buildDailySet, buildFreeSet } from '../learning/scheduler'
@@ -27,6 +27,15 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
   const [studySet, setStudySet] = useState<StudySet | null>(null)
   const [error, setError] = useState('')
   const [japaneseVoiceAvailable, setJapaneseVoiceAvailable] = useState(false)
+  const mainRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const heading = mainRef.current?.querySelector('h1')
+    if (!heading) return
+    document.title = `${heading.textContent} · 일본어공부`
+    heading.tabIndex = -1
+    heading.focus()
+  }, [route])
 
   useEffect(() => watchJapaneseVoice(setJapaneseVoiceAvailable), [])
   useEffect(() => {
@@ -91,18 +100,19 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#study-main">본문으로 이동</a>
       <aside className="sidebar">
         <div className="brand"><span className="brand-mark" aria-hidden="true">あ</span><span>일본어공부</span></div>
-        <p className="sidebar-caption">하루의 작은 공부가 쌓이는 곳</p>
+        <p className="sidebar-caption">기초부터 N4까지</p>
         {progress.placement && <nav aria-label="주요 메뉴">
-          <button type="button" className={route === 'home' ? 'active' : ''} onClick={() => setRoute('home')}>홈</button>
-          <button type="button" className={route === 'chapters' ? 'active' : ''} onClick={() => setRoute('chapters')}>자유 연습</button>
-          <button type="button" className={route === 'progress' ? 'active' : ''} onClick={() => setRoute('progress')}>진도</button>
-          <button type="button" className={route === 'settings' ? 'active' : ''} onClick={() => setRoute('settings')}>설정</button>
+          <button type="button" aria-current={route === 'home' ? 'page' : undefined} className={route === 'home' ? 'active' : ''} onClick={() => setRoute('home')}>홈</button>
+          <button type="button" aria-current={route === 'chapters' ? 'page' : undefined} className={route === 'chapters' ? 'active' : ''} onClick={() => setRoute('chapters')}>자유 연습</button>
+          <button type="button" aria-current={route === 'progress' ? 'page' : undefined} className={route === 'progress' ? 'active' : ''} onClick={() => setRoute('progress')}>진도</button>
+          <button type="button" aria-current={route === 'settings' ? 'page' : undefined} className={route === 'settings' ? 'active' : ''} onClick={() => setRoute('settings')}>설정</button>
         </nav>}
-        <div className="sidebar-footer">기초부터 N4까지<br />오늘도 내 속도로</div>
+
       </aside>
-      <main className="main-content">
+      <main ref={mainRef} className="main-content" id="study-main" tabIndex={-1}>
         {error && <div className="app-error" role="alert">{error}</div>}
         {route === 'placement' && <Placement items={content.items} onComplete={async (result) => {
           await save(applyPlacement(progress, result, new Date().toISOString()))
@@ -114,14 +124,14 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
         {route === 'progress' && <ProgressView progress={progress} today={today} content={content} />}
         {route === 'settings' && <Settings onRedoPlacement={() => setRoute('placement')} japaneseVoiceAvailable={japaneseVoiceAvailable} />}
         {route === 'practice' && studySet && <div className="practice-page">
-          <div className="practice-toolbar"><button type="button" className="text-button" onClick={() => setRoute('home')}>학습 나가기</button><span>언제든 다시 이어 풀 수 있어요</span></div>
+          <div className="practice-toolbar"><button type="button" className="text-button" onClick={() => setRoute('home')}>학습 나가기</button><span>자동 저장</span></div>
           <h1 className="practice-title">{practiceTitle}</h1>
           <Practice key={studySet.id} set={studySet} content={content} progress={progress} today={today} getToday={() => fixedDate ?? localDate()}
             onSave={save} onFinish={() => setRoute(studySet.source === 'free' && freeChapter === 'kana' ? 'kana-complete' : 'home')}
             onSpeak={japaneseVoiceAvailable ? (text) => { speakJapanese(text) } : undefined} />
         </div>}
         {route === 'kana-complete' && <div className="continue-page">
-          <div className="completion-card"><p className="eyebrow">문자 반복 학습</p><h1>한 묶음을 끝냈어요</h1><p>원하면 다음 묶음도 바로 이어갈 수 있습니다.</p>
+          <div className="completion-card"><h1>문자 연습 완료</h1><p>다음 10문제를 시작할 수 있습니다.</p>
             <button type="button" className="primary-button" onClick={() => startFree('kana', studySet?.range ?? 'all')}>계속 문자 연습</button>
             <button type="button" className="secondary-button" onClick={() => setRoute('home')}>홈으로</button>
           </div>

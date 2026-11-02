@@ -1,3 +1,4 @@
+import { sentenceChunks } from '../content/sentences/chunks'
 import { n4Scenes, n5Scenes } from '../content/sentences/scenes'
 import type { Lesson, StudyItem } from '../shared/types'
 import { grammarExamples } from './grammarContent'
@@ -39,12 +40,13 @@ export function buildSentenceContent(): { items: StudyItem[]; lessons: Lesson[] 
         const id = `sentence-created-${level.toLowerCase()}-${topic}-${String(index + 1).padStart(3, '0')}`
         lessons[lessons.length - 1].itemIds.push(id)
         const distractors = meanings.filter((meaning) => meaning !== reading.ko)
+        const chunks = sentenceChunks[reading.ja]
         items.push({
           id, chapter: 'sentences', level, topicId: topic, lessonId,
-          kind: index % 5 === 0 ? 'listen' : 'choice',
-          prompt: `「${reading.ja}」의 뜻은 무엇인가요?`,
-          options: [reading.ko, ...[0, 1, 2].map((offset) => distractors[(index * 11 + offset * 17) % distractors.length])],
-          answer: reading.ko,
+          kind: chunks ? 'arrange' : index % 5 === 0 ? 'listen' : 'choice',
+          prompt: chunks ? `일본어로 문장을 완성하세요.\n${reading.ko}` : `「${reading.ja}」의 뜻은 무엇인가요?`,
+          options: chunks ?? [reading.ko, ...[0, 1, 2].map((offset) => distractors[(index * 11 + offset * 17) % distractors.length])],
+          answer: chunks ? reading.ja : reading.ko,
           explanation: `「${reading.ja}」는 ‘${reading.ko}’라는 뜻입니다.`,
           speechText: reading.ja
         })

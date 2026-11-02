@@ -16,15 +16,14 @@ function shuffled<T>(values: T[], seed: number): T[] {
   return result
 }
 
-function eligibleNewItem(item: StudyItem, content: StudyContent, progress: Progress): boolean {
+function eligibleNewItem(item: StudyItem, n5Remaining: Set<Chapter>, progress: Progress): boolean {
   const start = progress.placement?.starts[item.chapter]
   if (item.chapter === 'kana') {
     return start !== 'katakana-basic' || !item.topicId.startsWith('hiragana')
   }
   if (start === 'N4') return item.level === 'N4'
   if (item.level !== 'N4') return true
-  return content.items.filter((entry) => entry.chapter === item.chapter && entry.level === 'N5')
-    .every((entry) => progress.answers[entry.id] !== undefined)
+  return !n5Remaining.has(item.chapter)
 }
 
 export function buildDailySet(content: StudyContent, progress: Progress, today: string, seed: number): StudySet {
@@ -39,7 +38,14 @@ export function buildDailySet(content: StudyContent, progress: Progress, today: 
 
   const due = content.items.filter((item) => progress.review[item.id]?.dueDate <= today)
     .sort((a, b) => progress.review[a.id].dueDate.localeCompare(progress.review[b.id].dueDate))
-  due.forEach(add)
+  const n5Remaining = new Set(content.items.filter((item) => item.level === 'N5' && !progress.answers[item.id]).map((item) => item.chapter))
+  const newByChapter = chapters.map((chapter) => content.items.filter((item) =>
+    item.chapter === chapter && !progress.answers[item.id] && eligibleNewItem(item, n5Remaining, progress)
+  ))
+  // Reserve one new item per available chapter; due reviews still appear first.
+  const reserved = newByChapter.flatMap((items) => items.slice(0, 1))
+  due.slice(0, dailySize - reserved.length).forEach(add)
+  reserved.forEach(add)
 
   const weak = shuffled(content.items.filter((item) => {
     const answer = progress.answers[item.id]
@@ -47,9 +53,6 @@ export function buildDailySet(content: StudyContent, progress: Progress, today: 
   }), seed).sort((a, b) => Number(b.chapter === 'kana') - Number(a.chapter === 'kana'))
   weak.forEach(add)
 
-  const newByChapter = chapters.map((chapter) => content.items.filter((item) =>
-    item.chapter === chapter && !progress.answers[item.id] && eligibleNewItem(item, content, progress)
-  ))
   for (let index = 0; selected.length < dailySize && newByChapter.some((items) => items.length > index); index++) {
     for (const items of newByChapter) {
       if (items[index]) add(items[index])

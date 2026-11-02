@@ -11,51 +11,39 @@ export function Home({ progress, today, dailySet, onStart, onResume, onFree }: {
 }) {
   const streak = getStreak(progress.completedDates, today)
   const studied = progress.completedDates.includes(today)
-  const hasActive = Boolean(progress.activeSet)
+  const active = progress.activeSet
+  const itemCount = active?.itemIds.length ?? dailySet.itemIds.length
+  const week = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(`${today}T00:00:00Z`)
+    date.setUTCDate(date.getUTCDate() - 6 + index)
+    return { date: date.toISOString().slice(0, 10), label: ['일', '월', '화', '수', '목', '금', '토'][date.getUTCDay()] }
+  })
 
   return (
     <div className="home-page">
-      <div className="page-intro">
-        <p className="eyebrow">매일 조금씩, 확실하게</p>
-        <h1>오늘의 학습</h1>
-        <p>지금 필요한 복습부터 새로운 표현까지, 오늘의 분량을 준비했어요.</p>
-      </div>
-
-      <section className="daily-hero" aria-labelledby="daily-title">
-        <div>
-          <p className="eyebrow">TODAY · {today}</p>
-          <h2 id="daily-title">{studied ? '오늘의 한 걸음, 완료!' : '오늘도 한 걸음 앞으로'}</h2>
-          <p>{dailySet.itemIds.length > 0 ? `약 ${dailySet.estimatedMinutes}분 · ${dailySet.itemIds.length}문제` : '새 학습 문제가 준비되면 여기에 표시됩니다.'}</p>
-          {hasActive ? <button type="button" className="primary-button" onClick={onResume}>이어 풀기</button>
-            : <button type="button" className="primary-button" onClick={onStart} disabled={dailySet.itemIds.length === 0}>오늘의 학습 시작</button>}
-        </div>
-        <div className="hero-mark" aria-hidden="true">あ</div>
-      </section>
-
-      <div className="home-stats">
-        <section className="stat-card">
-          <span className="stat-label">현재 연속 기록</span>
-          <strong>{streak.current}일 연속</strong>
-          <span>최장 {streak.longest}일</span>
+      <div className="page-intro title-row"><h1>오늘의 학습</h1><time dateTime={today}>{today.replaceAll('-', '.')}</time></div>
+      <div className="home-overview">
+        <section className="daily-hero" aria-labelledby="daily-title">
+          <h2 id="daily-title">{active ? '진행 중인 학습' : studied ? '오늘 학습 완료' : '오늘 풀 문제'}</h2>
+          <div className="session-size"><strong>{itemCount}</strong><span>문제</span></div>
+          <p className="session-detail">{active ? `${active.currentIndex} / ${itemCount}문제 완료` : `약 ${dailySet.estimatedMinutes}분`}</p>
+          {active ? <button type="button" className="primary-button" onClick={onResume}>이어 풀기</button>
+            : <button type="button" className="primary-button" onClick={onStart} disabled={itemCount === 0}>오늘의 학습 시작</button>}
         </section>
-        <section className="stat-card">
-          <span className="stat-label">누적 학습</span>
-          <strong>{progress.completedDates.length}일</strong>
-          <span>매일 쌓이는 기록</span>
-        </section>
-        <section className="stat-card">
-          <span className="stat-label">오늘의 상태</span>
-          <strong>{studied ? '완료' : '기다리는 중'}</strong>
-          <span>{studied ? '자유 연습도 이어갈 수 있어요' : '한 묶음을 끝내면 기록됩니다'}</span>
+        <section className="streak-card" aria-labelledby="streak-title">
+          <h2 id="streak-title">연속 학습</h2>
+          <strong className="streak-value">{streak.current}일 연속</strong>
+          <p>최장 {streak.longest}일 · 누적 {progress.completedDates.length}일</p>
+          <div className="week-record" aria-label="최근 7일 학습 기록">
+            {week.map(day => <div key={day.date} className={progress.completedDates.includes(day.date) ? 'done' : ''} aria-label={`${day.date} ${progress.completedDates.includes(day.date) ? '완료' : '학습 없음'}`}>
+              <span>{day.label}</span><span className="week-dot" aria-hidden="true">{progress.completedDates.includes(day.date) && <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="m3 8 3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}</span>
+            </div>)}
+          </div>
         </section>
       </div>
-
       <section className="home-secondary">
-        <div>
-          <h2>원하는 챕터를 더 연습하고 싶나요?</h2>
-          <p>문자, 문법, 단어, 문장을 자유롭게 반복할 수 있어요.</p>
-        </div>
-        <button type="button" className="secondary-button" onClick={onFree}>자유 연습</button>
+        <div><h2>자유 연습</h2><p>문자 · 문법 · 단어 · 문장</p></div>
+        <button type="button" className="secondary-button" onClick={onFree}>챕터 선택 <span aria-hidden="true">›</span></button>
       </section>
     </div>
   )

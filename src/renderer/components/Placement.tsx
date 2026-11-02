@@ -1,3 +1,4 @@
+import { ChoiceQuestion } from './ChoiceQuestion'
 import { useState } from 'react'
 import { nextPlacementItem, scorePlacement } from '../../learning/placement'
 import { orderOptions } from '../../learning/options'
@@ -36,12 +37,10 @@ export function Placement({ items, onComplete }: { items: StudyItem[]; onComplet
 
   return (
     <section className="placement">
-      <p className="eyebrow">첫 학습 준비</p>
-      <h2>시작점 찾기</h2>
-      <p>간단한 문제로 챕터별 시작 위치를 정합니다. 모르면 편하게 고르세요.</p>
+      <h1>시작점 찾기</h1>
+      <p>진단 결과에 맞춰 학습을 시작합니다.</p>
       {finished ? <div className="question-card placement-result">
         <h3>챕터별 시작점</h3>
-        <p>잘하는 영역은 이어 가고, 필요한 기초는 따로 익혀요.</p>
         <dl>{Object.entries(scorePlacement(answers).starts).map(([chapter, start]) => <div key={chapter}>
           <dt>{chapter === 'kana' ? '문자' : chapter === 'grammar' ? '문법' : chapter === 'vocabulary' ? '단어' : '문장'}</dt>
           <dd>{chapter === 'kana' ? start === 'katakana-basic' ? '가타카나부터' : '히라가나부터' : `${start}부터`}</dd>
@@ -50,13 +49,9 @@ export function Placement({ items, onComplete }: { items: StudyItem[]; onComplet
         {error && <p role="alert" className="error-message">{error}</p>}
       </div> : item ? (
         <div className="question-card">
-          <p className="progress-label">응답한 문제 {answers.length}개</p>
+          <p className="progress-label">완료 {answers.length}개</p>
           <h3>{item.prompt}</h3>
-          <div className="option-list" role="group" aria-label="답 선택">
-            {orderOptions(item.options ?? [], item.id).map((option) => (
-              <button type="button" key={option} onClick={() => choose(option)}>{option}</button>
-            ))}
-          </div>
+          <ChoiceQuestion options={orderOptions(item.options ?? [], item.id)} onAnswer={choose} />
         </div>
       ) : <p>진단 문제가 없습니다.</p>}
     </section>

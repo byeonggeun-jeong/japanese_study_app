@@ -16,3 +16,10 @@ OpenJLPT's underlying vocabulary and level assignments include Jonathan Waller's
 The grammar explanations, grammar examples, everyday readings, kana exercises and question presentation are newly authored for this project. They are not official JLPT questions. The app is not affiliated with the Japan Foundation or Japan Educational Exchanges and Services.
 
 Electron, React and other software dependency notices remain with their distributions. Electron's `LICENSE` and `LICENSES.chromium.html` are included by the packager.
+
+## Pretendard
+
+Bundled unmodified Pretendard Variable v1.3.9 by Kil Hyung-jin (orioncactus).
+Source: https://github.com/orioncactus/pretendard/tree/v1.3.9
+License: SIL Open Font License 1.1, included as licenses/Pretendard-OFL.txt.
+The font is embedded in the app for offline use; no font service is contacted.

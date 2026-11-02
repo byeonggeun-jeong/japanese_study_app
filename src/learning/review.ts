@@ -9,7 +9,7 @@ function addDays(date: string, days: number): string {
 export function recordAnswer(progress: Progress, itemId: string, correct: boolean, today: string): Progress {
   const previousAnswer = progress.answers[itemId] ?? { correct: 0, incorrect: 0, lastAnsweredAt: today }
   const previousReview = progress.review[itemId]
-  const intervalDays = correct ? Math.min(30, (previousReview?.intervalDays ?? 0) * 2 || 1) : 1
+  const intervalDays = correct ? Math.min(365, (previousReview?.intervalDays ?? 0) * 2 || 1) : 1
   return {
     ...progress,
     answers: {

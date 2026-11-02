@@ -1,3 +1,4 @@
+import { loadContent } from '../src/learning/content'
 import { describe, expect, it } from 'vitest'
 import { buildDailySet, buildFreeSet, finishSet } from '../src/learning/scheduler'
 import { recordAnswer } from '../src/learning/review'
@@ -71,3 +72,16 @@ describe('study scheduling', () => {
     expect(twice.completedDates).toEqual([today])
   })
 })
+
+it('finishes the real curriculum without starving chapters or accumulating overdue reviews', () => {
+  const curriculum = loadContent()
+  let progress = createEmptyProgress()
+  for (let day = 0; day < 1500; day++) {
+    const date = new Date(Date.UTC(2026, 0, 1 + day)).toISOString().slice(0, 10)
+    const set = buildDailySet(curriculum, progress, date, day)
+    expect(set.itemIds.length).toBeLessThanOrEqual(15)
+    for (const id of set.itemIds) progress = recordAnswer(progress, id, true, date)
+  }
+  expect(Object.keys(progress.answers)).toHaveLength(curriculum.items.length)
+  expect(Object.values(progress.review).filter((review) => review.dueDate < '2030-02-08').length).toBeLessThan(100)
+}, 60000)

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { useState } from 'react'
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Practice } from '../src/renderer/components/Practice'
@@ -28,7 +28,7 @@ describe('practice flow', () => {
       const view = render(<Practice set={{ ...set, itemIds: [item.id] }} content={{ items: [item], lessons: [] }}
         progress={createEmptyProgress()} today="2026-11-01" onSave={async () => {}} onFinish={() => {}} />)
       const buttons = within(screen.getByRole('group', { name: '답 선택' })).getAllByRole('button')
-      positions.add(buttons.findIndex((button) => button.textContent === '아'))
+      positions.add(buttons.findIndex((button) => button.querySelector('.option-text')?.textContent === '아'))
       view.unmount()
     }
     expect(positions.size).toBe(4)
@@ -42,7 +42,7 @@ describe('practice flow', () => {
     const view = render(<Practice {...props} progress={createEmptyProgress()} />)
     expect(screen.getByRole('heading', { name: 'あ 익히기' })).toBeTruthy()
     expect(screen.queryByRole('group', { name: '답 선택' })).toBeNull()
-    await user.click(screen.getByRole('button', { name: '연습해 보기' }))
+    await user.click(screen.getByRole('button', { name: '문제 풀기' }))
     expect(screen.getByRole('group', { name: '답 선택' })).toBeTruthy()
     view.unmount()
     render(<Practice {...props} progress={{ ...createEmptyProgress(), answers: { q1: { correct: 1, incorrect: 0, lastAnsweredAt: '2026-10-31' } } }} />)
@@ -76,7 +76,7 @@ describe('practice flow', () => {
       activeSet: { id: set.id, source: 'daily' as const, itemIds: set.itemIds, currentIndex: 2 },
       review: { q1: { dueDate: '2026-11-02', intervalDays: 1, successes: 0 } } }
     render(<Practice set={set} content={content} progress={progress} today="2026-11-01" onSave={async () => {}} onFinish={() => {}} />)
-    expect(screen.getByRole('heading', { name: '이번에 익힌 내용' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: '학습한 내용' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: '다음 복습' })).toBeTruthy()
     expect(screen.getByText(/2026-11-02/)).toBeTruthy()
   })
@@ -90,7 +90,7 @@ describe('practice flow', () => {
     }
     render(<Harness />)
     await user.click(screen.getByRole('button', { name: '아' }))
-    expect(await screen.findByText('정답이에요')).toBeTruthy()
+    expect(await screen.findByText('정답')).toBeTruthy()
     expect(screen.getByText('あ는 아입니다.')).toBeTruthy()
     expect(saved.answers.q1.correct).toBe(1)
     expect(saved.activeSet?.currentIndex).toBe(1)
@@ -118,7 +118,7 @@ describe('practice flow', () => {
     render(<Harness />)
     screen.getByRole('button', { name: '아' }).focus()
     await user.keyboard('{Enter}')
-    expect(await screen.findByText('정답이에요')).toBeTruthy()
+    expect(await screen.findByText('정답')).toBeTruthy()
     screen.getByRole('button', { name: '결과 보기' }).focus()
     await user.keyboard('{Enter}')
     screen.getByRole('button', { name: '학습 마치기' }).focus()
@@ -143,4 +143,58 @@ describe('practice flow', () => {
     await user.type(screen.getByRole('textbox', { name: '답 입력' }), 'ありがとう{Enter}')
     expect(answer).toBe('ありがとう')
   })
+})
+
+it('does not submit Enter while an IME composition is being confirmed', () => {
+  const answers: string[] = []
+  render(<InputQuestion onAnswer={(value) => answers.push(value)} />)
+  const input = screen.getByRole('textbox')
+  fireEvent.compositionStart(input)
+  fireEvent.change(input, { target: { value: 'ありがとう' } })
+  fireEvent.submit(input.closest('form')!)
+  expect(answers).toEqual([])
+  fireEvent.compositionEnd(input)
+  fireEvent.submit(input.closest('form')!)
+  expect(answers).toEqual(['ありがとう'])
+})
+it('hides a listening source until requested when speech is available', async () => {
+  const user = userEvent.setup()
+  const item = { ...content.items[0], kind: 'listen' as const, prompt: '「おはよう」の 뜻은?', speechText: 'おはよう' }
+  render(<Practice set={{ ...set, itemIds: [item.id] }} content={{ items: [item], lessons: [] }} progress={createEmptyProgress()}
+    today="2026-11-01" onSave={async () => {}} onFinish={() => {}} onSpeak={() => {}} />)
+  expect(screen.queryByText(/おはよう/)).toBeNull()
+  await user.click(screen.getByRole('button', { name: '원문 보기' }))
+  expect(screen.getByText('おはよう')).toBeTruthy()
+})
+it('keeps the text fallback for listening without a Japanese voice', () => {
+  const item = { ...content.items[0], kind: 'listen' as const, prompt: '「おはよう」の 뜻은?', speechText: 'おはよう' }
+  render(<Practice set={{ ...set, itemIds: [item.id] }} content={{ items: [item], lessons: [] }} progress={createEmptyProgress()}
+    today="2026-11-01" onSave={async () => {}} onFinish={() => {}} />)
+  expect(screen.getByRole('heading', { name: item.prompt })).toBeTruthy()
+})
+
+
+it('numbers each answer in a single ordered choice list without changing its accessible label', () => {
+  render(<Practice set={set} content={content} progress={createEmptyProgress()} today="2026-11-01" onSave={async () => {}} onFinish={() => {}} />)
+  const group = screen.getByRole('group', { name: '답 선택' })
+  const buttons = within(group).getAllByRole('button')
+  expect(buttons.map((button) => button.querySelector('.option-number')?.textContent)).toEqual(['1', '2'])
+  expect(screen.getByRole('button', { name: '아' })).toBeTruthy()
+})
+
+it('keeps keyboard focus on the feedback action and then the next question', async () => {
+  const user = userEvent.setup()
+  function Harness() {
+    const [progress, setProgress] = useState(createEmptyProgress())
+    return <Practice set={set} content={content} progress={progress} today="2026-11-02"
+      onSave={async next => setProgress(next)} onFinish={() => {}} />
+  }
+  render(<Harness />)
+  screen.getByRole('button', { name: '아' }).focus()
+  await user.keyboard('{Enter}')
+  expect(await screen.findByRole('button', { name: '다음 문제' })).toBe(document.activeElement)
+  await user.keyboard('{Enter}')
+  expect(screen.getByRole('heading', { name: 'い의 읽기는?' })).toBe(document.activeElement)
+  await user.tab()
+  expect(document.activeElement?.closest('[aria-label="답 선택"]')).toBeTruthy()
 })

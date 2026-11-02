@@ -9,7 +9,7 @@ export function ChoiceQuestion({ options, onAnswer, speechText, onSpeak }: {
       {speechText && onSpeak && <button type="button" className="listen-button" onClick={() => onSpeak(speechText)}>문장 듣기</button>}
       <div className="option-list" role="group" aria-label="답 선택">
         {options.map((option, index) => (
-          <button type="button" key={`${option}-${index}`} onClick={() => onAnswer(option)}>{option}</button>
+          <button type="button" key={`${option}-${index}`} onClick={() => onAnswer(option)}><span className="option-number" aria-hidden="true">{index + 1}</span><span className="option-text">{option}</span></button>
         ))}
       </div>
     </>
