@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "electron-vite build",
-    "make": "npm run typecheck && npm test && npm run validate:content && npm run build && electron-builder --win nsis",
+    "make": "npm run typecheck && npm test && npm run validate:content && npm run build && electron-builder --win nsis --publish never",
     "validate:content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
