@@ -31,9 +31,15 @@ https://github.com/byeonggeun-jeong/japanese_study_app/blob/main/docs/code-signi
 Build workflow:
 https://github.com/byeonggeun-jeong/japanese_study_app/actions/workflows/windows-build.yml
 
+Successful public Windows build (unsigned):
+https://github.com/byeonggeun-jeong/japanese_study_app/actions/runs/41390055747
+
+Source commit: f204cb68565753bf7bd3c42c353bf9095620290c
+
 ## 신청 전 확인할 항목
 
 - GitHub 공개 빌드 성공과 해당 실행 URL·커밋, 다운로드 가능한 unsigned artifact.
+- 배포 이력 요건: 현재는 로컬 설치 파일과 Actions 산출물만 있으며, 정식 GitHub Release는 아직 게시하지 않았다. 신청 시 요구되는 공개 배포 형태를 확인한다.
 - 소유자 본인의 연락 이메일, GitHub 및 SignPath 계정 2단계 인증 확인.
 - 심사 조건 수락과 공개 초기 프로젝트의 심사 가능 여부 확인.
 - 원본 코드/자료 라이선스 구분 및 Electron 바이너리 서명 범위 검토.

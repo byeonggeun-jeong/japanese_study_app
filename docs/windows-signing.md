@@ -13,3 +13,21 @@
 - Microsoft 서명 요구사항: https://learn.microsoft.com/en-us/windows/apps/develop/smart-app-control/code-signing-for-smart-app-control
 - Microsoft Smart App Control FAQ: https://support.microsoft.com/en-us/windows/security/threat-malware-protection/smart-app-control-frequently-asked-questions
 - SignPath 심사 조건: https://signpath.org/terms
+
+## 준비 결과 검증
+
+2026-11-02 로컬 타입 검사·87개 테스트·2,001문항/189단원 검사·앱 빌드 통과.
+패키징은 샌드박스 네트워크 제한으로 처음 실패한 뒤 네트워크 허용 환경에서
+성공했다. 생성된 resources의 MIT LICENSE, 외부 라이선스·출처, 수정 어휘 파일을
+확인했다. 새 설치 파일 역시 NotSigned이며 실제 설치본을 덮어쓰지 않았다.
+
+공개 Windows 빌드도 성공했다:
+https://github.com/byeonggeun-jeong/japanese_study_app/actions/runs/41390055747
+
+검증된 소스 커밋: f204cb68565753bf7bd3c42c353bf9095620290c.
+npm ci부터 전체 검사, NSIS 생성, unsigned artifact 업로드까지 통과했다.
+설치 파일·SHA256SUMS·build-info.json·라이선스·서명 정책을 산출물로 보관한다.
+첫 CI 실행은 electron-builder의 암묵적 릴리스 게시가 토큰을 요구해 실패했으며,
+make에 --publish never를 명시한 뒤 성공했다. 릴리스 게시 권한은 추가하지 않았다.
+Actions의 Node 20 런타임 폐기 경고는 호스트의 Node 24 강제 실행 안내이며,
+현재 실행 결과는 성공이다. 서명·SAC 실행 검증은 여전히 미완료다.
