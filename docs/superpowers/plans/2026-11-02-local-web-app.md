@@ -22,6 +22,6 @@ not the source of truth. Two browser tabs use revision checks to prevent lost sa
   write current architecture, migration/backup and launch instructions in README.
 - [x] Verify typecheck, all tests, content identity, production package and actual browser
   flow against scratch progress. Check real existing progress hashes before/after read-only launch.
-- [ ] Commit/push to existing public main and verify GitHub Actions succeeds.
+- [x] Commit/push to existing public main and verify GitHub Actions succeeds.
 
 No SignPath submission, security-setting changes, paid service or unrelated UI redesign.

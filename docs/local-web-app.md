@@ -66,10 +66,18 @@ Ruling: 브라우저 저장소 대신 기존 파일을 유지한다. 원본 진�
 
 독립적인 읽기 전용 검토 1회에서 Critical/Important 지적은 없었다. 사소한 지적으로
 Vite root 변경 후 public 아이콘이 빌드에 포함되지 않는 것을 확인해 publicDir를
-명시했다. 실제 빌드와 ZIP의 icon.png 포함 여부를 검증한다. 재검토는 반복하지 않는다.
+명시했다. 실제 빌드와 ZIP의 icon.png 포함을 확인했다. 재검토는 반복하지 않는다.
 
 Final Ruling: 다른 PC의 SAC 정책, 악의적인 로컬 프로세스·수동 삽입 심볼릭 링크,
 Windows 외 배포는 보장 범위에서 제외한다. 각 환경의 정책 또는 명시적인 로컬 전용
 설계에 따른 제한이며, README에 런타임 요구사항과 실행 방법을 기록한다.
 Final Ruling: 검토자가 재실행하지 않은 브라우저 흐름·테스트는 구현자가 실제 실행한
 결과를 위에 기록한다. GitHub 반영과 원격 빌드는 다음 완료 단계로 별도 검증한다.
+
+공개 main 푸시 및 Windows CI도 성공했다:
+https://github.com/byeonggeun-jeong/japanese_study_app/actions/runs/41392368971
+
+빌드 소스: 2ceac8ea736b5ce4b83eb336c9ff1fe20c2c4bec. 깨끗한 Windows 환경에서
+npm ci, 타입·테스트·콘텐츠 검사, 화면·서버 빌드, ZIP 생성·SHA-256 기록과 산출물
+업로드를 통과했다. 현재 ZIP은 약 2.2MiB이며 node_modules, EXE, 개인 progress.json을
+포함하지 않는다. 기존 Electron 생성물은 Git 제외 작업 폴더에 별도 보관했다.
