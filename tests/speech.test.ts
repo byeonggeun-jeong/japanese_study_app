@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { getJapaneseVoice, speakJapanese, watchJapaneseVoice } from '../src/renderer/speech'
+import { getJapaneseVoice, speakJapanese, watchJapaneseVoice } from '../src/app/speech'
 
 function voice(lang: string): SpeechSynthesisVoice {
   return { lang, name: lang, default: false, localService: true, voiceURI: lang } as SpeechSynthesisVoice

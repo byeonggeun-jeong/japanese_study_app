@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { createEmptyProgress, loadProgress, saveProgress } from '../src/main/progressStore'
+import { createEmptyProgress, loadProgress, saveProgress } from '../src/server/progressStore'
 
 const dirs: string[] = []
 

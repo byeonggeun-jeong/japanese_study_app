@@ -2,9 +2,9 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it, vi } from 'vitest'
-import { App } from '../src/renderer/App'
-import { Settings } from '../src/renderer/components/Settings'
-import { createEmptyProgress } from '../src/main/progressStore'
+import { App } from '../src/app/App'
+import { Settings } from '../src/app/components/Settings'
+import { createEmptyProgress } from '../src/server/progressStore'
 afterEach(cleanup)
 it('opens both kana charts from daily study without changing progress', async () => {
  const user=userEvent.setup()

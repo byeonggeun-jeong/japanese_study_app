@@ -7,6 +7,7 @@ import { ArrangeQuestion } from './ArrangeQuestion'
 import { ChoiceQuestion } from './ChoiceQuestion'
 import { Completion } from './Completion'
 import { InputQuestion } from './InputQuestion'
+import { saveErrorMessage } from '../api'
 
 export function Practice({ set, content, progress, today, getToday, onSave, onFinish, onSpeak }: {
   set: StudySet
@@ -42,8 +43,8 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
     try {
       await onSave(updated)
       setFeedback({ item, correct })
-    } catch {
-      setError('답변을 저장하지 못했습니다. 다시 시도해 주세요.')
+    } catch (error) {
+      setError(saveErrorMessage(error, '답변을 저장하지 못했습니다. 다시 시도해 주세요.'))
     } finally {
       setBusy(false)
     }
@@ -57,8 +58,8 @@ export function Practice({ set, content, progress, today, getToday, onSave, onFi
     try {
       await onSave(updated)
       onFinish(updated)
-    } catch {
-      setError('학습 기록을 저장하지 못했습니다. 다시 시도해 주세요.')
+    } catch (error) {
+      setError(saveErrorMessage(error, '학습 기록을 저장하지 못했습니다. 다시 시도해 주세요.'))
       setBusy(false)
     }
   }

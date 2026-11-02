@@ -2,7 +2,7 @@ import { loadContent } from '../src/learning/content'
 import { describe, expect, it } from 'vitest'
 import { buildDailySet, buildFreeSet, finishSet } from '../src/learning/scheduler'
 import { recordAnswer } from '../src/learning/review'
-import { createEmptyProgress } from '../src/main/progressStore'
+import { createEmptyProgress } from '../src/server/progressStore'
 import type { StudyContent, StudyItem } from '../src/shared/types'
 
 function item(id: string, chapter: StudyItem['chapter'] = 'vocabulary', level: StudyItem['level'] = 'N5'): StudyItem {

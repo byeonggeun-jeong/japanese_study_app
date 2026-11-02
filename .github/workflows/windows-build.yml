@@ -1,4 +1,4 @@
-name: Windows build (unsigned)
+name: Local web app - Windows ZIP
 
 on:
   push:
@@ -11,43 +11,29 @@ permissions:
 jobs:
   build:
     runs-on: windows-2025
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '24'
           cache: npm
       - run: npm ci
       - name: Check, test and package
         run: npm run make
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-      - name: Record unsigned build provenance
+      - name: Checksum local web package
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          Copy-Item LICENSE, THIRD_PARTY_NOTICES.md, docs/code-signing-policy.md dist/
-          $buildInfo = @{
-            repository = $env:GITHUB_REPOSITORY
-            commit = $env:GITHUB_SHA
-            run = "$env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
-            signingStatus = 'UNSIGNED - not compatible with Smart App Control blocking unknown unsigned apps'
-          }
-          $buildInfo | ConvertTo-Json | Set-Content -Encoding utf8 dist/build-info.json
-          Get-ChildItem dist/Java*Setup*.exe | ForEach-Object {
+          Get-ChildItem dist/*-LocalWeb.zip | ForEach-Object {
             $hash = Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256
             "$($hash.Hash.ToLowerInvariant())  $($_.Name)"
           } | Set-Content -Encoding utf8 dist/SHA256SUMS.txt
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: windows-unsigned-${{ github.sha }}
+          name: local-web-${{ github.sha }}
           path: |
-            dist/Java*Setup*.exe
+            dist/*-LocalWeb.zip
             dist/SHA256SUMS.txt
-            dist/build-info.json
-            dist/LICENSE
-            dist/THIRD_PARTY_NOTICES.md
-            dist/code-signing-policy.md
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30

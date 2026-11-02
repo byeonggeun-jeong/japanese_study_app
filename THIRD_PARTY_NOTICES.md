@@ -23,7 +23,12 @@ OpenJLPT's underlying vocabulary and level assignments include Jonathan Waller's
 
 The grammar explanations, grammar examples, everyday readings, kana exercises and question presentation are newly authored for this project. They are not official JLPT questions. The app is not affiliated with the Japan Foundation or Japan Educational Exchanges and Services.
 
-Electron, React and other software dependency notices remain with their distributions. Electron's `LICENSE` and `LICENSES.chromium.html` are included by the packager.
+React and other software dependencies retain their own licenses. The current
+local-web distribution does not bundle Electron or Node.js. Node.js and the web
+browser are installed separately from their respective official distributions.
+React and React DOM 19.3.1 are bundled in the browser build under the MIT license
+by Meta Platforms, Inc. and affiliates, preserved in licenses/React-MIT.txt.
+Source: https://github.com/facebook/react
 
 ## Pretendard
 

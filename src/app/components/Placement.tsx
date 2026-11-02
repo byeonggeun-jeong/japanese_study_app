@@ -32,7 +32,7 @@ export function Placement({ items, onComplete }: { items: StudyItem[]; onComplet
     setBusy(true)
     setError('')
     try { await onComplete(scorePlacement(answers)) }
-    catch { setError('진단 결과를 저장하지 못했습니다. 다시 시도해 주세요.'); setBusy(false) }
+    catch (error) { setError(saveErrorMessage(error, '진단 결과를 저장하지 못했습니다. 다시 시도해 주세요.')); setBusy(false) }
   }
 
   return (
@@ -57,3 +57,4 @@ export function Placement({ items, onComplete }: { items: StudyItem[]; onComplet
     </section>
   )
 }
+import { saveErrorMessage } from '../api'

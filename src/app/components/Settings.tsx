@@ -15,7 +15,7 @@ export function Settings({ onRedoPlacement, japaneseVoiceAvailable }: { onRedoPl
       <p>{japaneseVoiceAvailable ? '이 PC의 일본어 음성을 사용합니다.' : '음성이 없어 텍스트로 학습합니다. Windows 설정에서 일본어 음성을 추가할 수 있습니다.'}</p>
     </section>
     <section className="settings-card">
-      <h2>앱 정보</h2><p>일본어공부 0.1.2</p>
+      <h2>앱 정보</h2><p>일본어공부 0.2.0</p>
       <p className="project-links"><a href={projectLinks.github} target="_blank" rel="noreferrer">@byeonggeun-jeong</a><a href={projectLinks.repository} target="_blank" rel="noreferrer">소스 코드</a></p>
     </section>
     <section className="settings-card">

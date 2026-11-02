@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, expect, it, vi } from 'vitest'
-import { createEmptyProgress, loadProgress, saveProgress } from '../src/main/progressStore'
+import { createEmptyProgress, loadProgress, saveProgress } from '../src/server/progressStore'
 vi.mock('node:fs/promises', { spy: true })
 const dirs: string[] = []
 afterEach(async () => {

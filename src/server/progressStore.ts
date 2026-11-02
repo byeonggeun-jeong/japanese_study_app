@@ -40,7 +40,7 @@ function timestamp(value: unknown): boolean {
   return typeof value === 'string' && date(value.slice(0, 10)) && Number.isFinite(Date.parse(value))
 }
 
-function parseProgress(text: string): Progress {
+export function parseProgress(text: string): Progress {
   const value: unknown = JSON.parse(text)
   if (!isRecord(value)) throw new Error('Progress file is damaged')
   if (value.schemaVersion !== 1) throw new Error('Unsupported progress version')

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { completeStudyDate, getStreak } from '../src/learning/streak'
-import { createEmptyProgress } from '../src/main/progressStore'
+import { createEmptyProgress } from '../src/server/progressStore'
 
 describe('study dates and streaks', () => {
   it('counts a date once even after both guided and free sets', () => {

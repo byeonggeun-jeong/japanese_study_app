@@ -11,6 +11,7 @@ import { Practice } from './components/Practice'
 import { ProgressView } from './components/Progress'
 import { Settings } from './components/Settings'
 import { speakJapanese, watchJapaneseVoice } from './speech'
+import { saveErrorMessage, studyApi } from './api'
 
 const content = loadContent()
 type Route = 'loading' | 'placement' | 'home' | 'chapters' | 'progress' | 'settings' | 'practice' | 'kana-complete' | 'kana-chart'
@@ -20,7 +21,7 @@ function localDate(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
-export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAppAPI; today?: string }) {
+export function App({ api = studyApi, today: fixedDate }: { api?: StudyAppAPI; today?: string }) {
   const [calendarDate, setCalendarDate] = useState(localDate)
   const today = fixedDate ?? calendarDate
   const [progress, setProgress] = useState<Progress | null>(null)
@@ -71,8 +72,8 @@ export function App({ api = window.studyApp, today: fixedDate }: { api?: StudyAp
       setStudySet(set)
       setRoute('practice')
       setError('')
-    } catch {
-      setError('학습을 시작할 수 없습니다. 기록 저장을 확인해 주세요.')
+    } catch (error) {
+      setError(saveErrorMessage(error, '학습을 시작할 수 없습니다. 시작 창을 확인하고 다시 시도해 주세요.'))
     }
   }
 

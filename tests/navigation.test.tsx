@@ -2,11 +2,19 @@
 import { act, cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { App } from '../src/renderer/App'
-import { createEmptyProgress } from '../src/main/progressStore'
+import { App } from '../src/app/App'
+import { ProgressConflictError } from '../src/app/api'
+import { createEmptyProgress } from '../src/server/progressStore'
 import type { Progress, StudyAppAPI } from '../src/shared/types'
 
 afterEach(() => { cleanup(); vi.useRealTimers() })
+
+it('tells users to reload after another tab changes their progress', async () => {
+  const user = userEvent.setup()
+  render(<App api={{ loadProgress: async () => placedProgress(), saveProgress: async () => { throw new ProgressConflictError() } }} today="2026-11-02" />)
+  await user.click(await screen.findByRole('button', { name: '오늘의 학습 시작' }))
+  expect(screen.getByRole('alert').textContent).toContain('새로고침')
+})
 
 function placedProgress(): Progress {
   return { ...createEmptyProgress(), placement: {

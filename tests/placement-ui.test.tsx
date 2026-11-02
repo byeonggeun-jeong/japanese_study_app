@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
-import { Placement } from '../src/renderer/components/Placement'
+import { Placement } from '../src/app/components/Placement'
 import { loadContent } from '../src/learning/content'
 import type { PlacementResult } from '../src/learning/placement'
 

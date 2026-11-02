@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { loadContent } from '../src/learning/content'
 import { applyPlacement, nextPlacementItem, scorePlacement } from '../src/learning/placement'
-import { createEmptyProgress } from '../src/main/progressStore'
+import { createEmptyProgress } from '../src/server/progressStore'
 import type { Chapter, PlacementAnswer } from '../src/shared/types'
 
 const chapters: Chapter[] = ['kana', 'grammar', 'vocabulary', 'sentences']
