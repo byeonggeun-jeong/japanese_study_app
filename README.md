@@ -1,8 +1,16 @@
 # 일본어공부
 
-**현재 버전: 0.1.2.** 최종 검토 수정과 UI 재점검, 이 PC의 설치본 업데이트를 마쳤습니다. [변경·검증 결과](docs/final-review.md)를 참고하세요.
+**현재 버전: 0.1.2.** Smart App Control이 켜진 PC에서 서명되지 않은 실행 파일이 차단되는 문제가 확인됐습니다. 현재 설치본은 이 환경에서 실행할 수 없습니다. [차단 원인과 해결 조건](docs/windows-signing.md), [변경·검증 결과](docs/final-review.md)를 참고하세요.
 
 Windows에서 매일 조금씩 이어가는 일본어 학습 앱입니다. Electron으로 실행하며 학습 자료와 진도는 PC에 저장합니다. 계정·구독·유료 API가 필요하지 않습니다.
+
+## 라이선스와 코드 서명
+
+직접 작성한 앱 코드와 학습 콘텐츠는 [MIT](LICENSE)로 공개합니다. OpenJLPT 파생 어휘 자료(CC BY-SA 4.0), Pretendard(SIL OFL 1.1), 외부 의존성에는 각각의 라이선스가 적용됩니다. 자세한 범위는 [출처 고지](THIRD_PARTY_NOTICES.md)를 참고하세요.
+
+[Code signing policy](docs/code-signing-policy.md) · [공개 Windows 빌드](https://github.com/byeonggeun-jeong/japanese_study_app/actions/workflows/windows-build.yml) · [무료 서명 신청 준비](docs/signpath-application.md)
+
+무료 서명 심사를 준비 중이며 아직 제출·승인되지 않았습니다. 현재 빌드 산출물은 unsigned로 표시하며, Smart App Control 차단을 해결한 배포본이 아닙니다.
 
 ## 설치와 실행
 

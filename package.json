@@ -5,6 +5,7 @@
   "description": "매일 이어가는 일본어 공부",
   "author": "Codex",
   "private": true,
+  "license": "MIT",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

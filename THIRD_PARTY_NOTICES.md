@@ -1,5 +1,13 @@
 # Content attribution
 
+## License scope
+
+The original application source code, newly authored learning content (except
+adaptations identified below), and documentation are licensed under the root
+MIT LICENSE. This does not relicense third-party material. In particular,
+src/content/vocabulary/lexicon.json remains CC BY-SA 4.0, the bundled
+Pretendard font remains SIL OFL 1.1, and dependencies retain their own licenses.
+
 The vocabulary data is adapted from **OpenJLPT**, by the OpenJLPT contributors (`evanclan/OpenJLPT`).
 
 - Source: https://github.com/evanclan/OpenJLPT

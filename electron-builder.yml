@@ -8,6 +8,8 @@ files:
   - out/**/*
   - package.json
 extraResources:
+  - from: LICENSE
+    to: LICENSE
   - from: licenses
     to: licenses
   - from: THIRD_PARTY_NOTICES.md
